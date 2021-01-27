@@ -11,7 +11,7 @@ do
     else 
         if [ ! -f "$UTILS_TMP_PATH/$TOOL.sh" ]
         then
-            curl -Ls https://raw.githubusercontent.com/softspring/bash-utils/main/$TOOL.sh --output=$UTILS_TMP_PATH/$TOOL.sh            
+            curl -Ls https://raw.githubusercontent.com/softspring/bash-utils/main/$TOOL.sh --output $UTILS_TMP_PATH/$TOOL.sh            
         fi
         
         source "$UTILS_TMP_PATH/$TOOL.sh"
