@@ -1,3 +1,3 @@
 #!/bin/bash -e
 
-echo "test $@"
+echo "loading gcloud tools"
