@@ -9,6 +9,7 @@ do
         echo " - include $TOOL"
         source <(curl -Ls https://raw.githubusercontent.com/softspring/bash-utils/main/$TOOL.sh)
     else 
+        mkdir -p $UTILS_TMP_PATH
         if [ ! -f "$UTILS_TMP_PATH/$TOOL.sh" ]
         then
             echo " - downloading $TOOL"
