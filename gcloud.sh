@@ -1,3 +1,3 @@
 #!/bin/bash -e
 
-echo "test $1"
+echo "test $@"
