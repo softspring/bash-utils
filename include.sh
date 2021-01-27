@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-echo "Bash utils include tool"
+echo "Bash utils include tool $UTILS_TMP_PATH"
 
 for TOOL in "$@"
 do
