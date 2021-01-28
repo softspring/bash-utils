@@ -28,3 +28,17 @@ function saveEnvVariable {
 
   loadEnvFile $ENV_FILE 1
 }
+
+function removeEnvVariable {
+  local ENV_FILE=$1
+  local PROPERTY=$2
+  local SED_SEPARATOR="${4:-/}"
+
+  if egrep -q "^$PROPERTY=" $ENV_FILE
+  then
+    sed "s$SED_SEPARATOR^$PROPERTY=.*\$${SED_SEPARATOR}d" -i $ENV_FILE
+    message "Removed $PROPERTY from $ENV_FILE\n"
+  fi
+
+  loadEnvFile $ENV_FILE 1
+}
