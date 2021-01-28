@@ -31,7 +31,7 @@ function promptGcloudProject {
     do
       read -p 'GCLOUD_PROJECT: ' GCLOUD_PROJECT
 
-      if [[ -z $(gcloud projects list --format "value(project_id)" | egrep -q "^$GCLOUD_PROJECT$") ]]
+      if [[ -z $(gcloud projects list --format "value(project_id)" --filter "name:$GCLOUD_PROJECT") ]]
       then
         read -p "Project not found, do you want to create it? (Y/n)? " Yn
         if [[ $Yn == "Y" || $Yn == "" ]]
