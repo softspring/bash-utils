@@ -12,6 +12,18 @@ then
     set -- "env" "files" "gcloud" "prompt" "text" "utils"
 fi
 
+LAST_GITHUB_COMMIT=$(curl "https://api.github.com/repos/softspring/bash-utils/branches/main" 2>&1 | grep sha | head -n1 | cut -d ":" -f2- | sed 's/[" ,]//g')
+echo "Last github commit $LAST_GITHUB_COMMIT"
+
+if [ ! -f "$UTILS_TMP_PATH/.version" ]
+then
+  CURRENT_COMMIT=''
+  echo "No current commit"
+else
+  CURRENT_COMMIT=$(cat "$UTILS_TMP_PATH/.version")
+  echo "Current commit $CURRENT_COMMIT"
+fi
+
 for TOOL in "$@"
 do
     if [ -z $UTILS_TMP_PATH ]
@@ -25,11 +37,24 @@ do
             echo " - downloading $TOOL"
             curl -Ls https://raw.githubusercontent.com/softspring/bash-utils/main/$TOOL.sh --output $UTILS_TMP_PATH/$TOOL.sh            
         else
-            echo " - loading $TOOL (from cache)"
+            if [[ $LAST_GITHUB_COMMIT == $CURRENT_COMMIT ]]
+            then
+              echo " - loading $TOOL (from cache)"
+            else
+              echo " - upgrading $TOOL (to cache)"
+              curl -Ls https://raw.githubusercontent.com/softspring/bash-utils/main/$TOOL.sh --output $UTILS_TMP_PATH/$TOOL.sh
+            fi
         fi
         
         source "$UTILS_TMP_PATH/$TOOL.sh"
     fi    
 done
+
+if [ ! -z $UTILS_TMP_PATH ]
+then
+  echo $LAST_GITHUB_COMMIT > $UTILS_TMP_PATH/.version
+fi
+
 echo
+
 
