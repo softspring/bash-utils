@@ -15,7 +15,7 @@ fi
 LAST_GITHUB_COMMIT=$(curl "https://api.github.com/repos/softspring/bash-utils/branches/main" 2>&1 | grep sha | head -n1 | cut -d ":" -f2- | sed 's/[" ,]//g')
 echo "Last github commit $LAST_GITHUB_COMMIT"
 
-if [ -z $UTILS_TMP_PATH ]
+if [ ! -z $UTILS_TMP_PATH && ! -z $LAST_GITHUB_COMMIT ]
 then
   if [ ! -f "$UTILS_TMP_PATH/.version" ]
   then
@@ -40,7 +40,7 @@ do
             echo " - downloading $TOOL"
             curl -Ls https://raw.githubusercontent.com/softspring/bash-utils/main/$TOOL.sh --output $UTILS_TMP_PATH/$TOOL.sh            
         else
-            if [[ $LAST_GITHUB_COMMIT == $CURRENT_COMMIT ]]
+            if [[ ! -z LAST_GITHUB_COMMIT && $LAST_GITHUB_COMMIT == $CURRENT_COMMIT ]]
             then
               echo " - loading $TOOL (from cache)"
             else
@@ -53,7 +53,7 @@ do
     fi    
 done
 
-if [ ! -z $UTILS_TMP_PATH ]
+if [ ! -z $UTILS_TMP_PATH && ! -z $LAST_GITHUB_COMMIT ]
 then
   echo $LAST_GITHUB_COMMIT > $UTILS_TMP_PATH/.version
 fi
