@@ -130,7 +130,7 @@ function runSed {
   local SYSTEM="$(uname -s)"
   case "${SYSTEM}" in
     Linux*)
-        sed $COMMAND
+        eval "sed $COMMAND"
         ;;
     Darwin*)
         if ! command -v gsed &> /dev/null
@@ -139,13 +139,12 @@ function runSed {
             exit 1
         fi
 
-        gsed $COMMAND
+        eval "gsed $COMMAND"
       ;;
     *)
       echo "Unknown $SYSTEM system"
   esac
 }
-
 
 function replaceInFile {
   local EXPRESSION=$1
