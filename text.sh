@@ -124,16 +124,13 @@ function error {
   message "$1" "error"
 }
 
-function replaceInFile {
-  local EXPRESSION=$1
-  local VALUE=$2
-  local FILE_PATH=$3
-  local SED_SEPARATOR="${4:-/}"
+function runSed {
+  local COMMAND=$1
 
   local SYSTEM="$(uname -s)"
   case "${SYSTEM}" in
     Linux*)
-        sed "s${SED_SEPARATOR}${EXPRESSION}${SED_SEPARATOR}${VALUE}${SED_SEPARATOR}g" -i $FILE_PATH
+        sed $COMMAND
         ;;
     Darwin*)
         if ! command -v gsed &> /dev/null
@@ -142,13 +139,32 @@ function replaceInFile {
             exit 1
         fi
 
-        gsed "s${SED_SEPARATOR}${EXPRESSION}${SED_SEPARATOR}${VALUE}${SED_SEPARATOR}g" -i $FILE_PATH
+        gsed $COMMAND
       ;;
     *)
       echo "Unknown $SYSTEM system"
   esac
 }
 
+
+function replaceInFile {
+  local EXPRESSION=$1
+  local VALUE=$2
+  local FILE_PATH=$3
+  local SED_SEPARATOR="${4:-/}"
+  local OPTIONS=$5
+
+  runSed "\"s${SED_SEPARATOR}${EXPRESSION}${SED_SEPARATOR}${VALUE}${SED_SEPARATOR}g\" -i $OPTIONS $FILE_PATH"
+}
+
+function deleteInFile {
+  local EXPRESSION=$1
+  local FILE_PATH=$2
+  local SED_SEPARATOR="${3:-/}"
+  local OPTIONS=$4
+
+  runSed "\"s${SED_SEPARATOR}${EXPRESSION}${SED_SEPARATOR}d\" -i $OPTIONS $FILE_PATH"
+}
 
 function test_messages {
   MESSAGE=$(message_make "default") ; message "test " "default" ; echo $MESSAGE ; test "\e[${DEFAULT}m%b\e[0m" = "$MESSAGE"

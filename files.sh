@@ -85,12 +85,12 @@ function comment() {
     local REGEX="${1:?}"
     local FILE="${2:?}"
     local COMMENT_MARK="${3:-#}"
-    sed -ri "s:^([ ]*)($REGEX):\\1$COMMENT_MARK\\2:" "$FILE"
+    replaceInFile "^([ ]*)($REGEX)" "\\1$COMMENT_MARK\\2" $FILE ':' '-r'
 }
 
 function uncomment() {
     local REGEX="${1:?}"
     local FILE="${2:?}"
     local COMMENT_MARK="${3:-#}"
-    sed -ri "s:^([ ]*)[$COMMENT_MARK]+[ ]?([ ]*$REGEX):\\1\\2:" "$FILE"
+    replaceInFile "^([ ]*)[$COMMENT_MARK]+[ ]?([ ]*$REGEX)" "\\1\\2" $FILE ':' '-r'
 }
