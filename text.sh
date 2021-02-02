@@ -130,7 +130,23 @@ function replaceInFile {
   local FILE_PATH=$3
   local SED_SEPARATOR="${4:-/}"
 
-  sed "s${SED_SEPARATOR}${EXPRESSION}${SED_SEPARATOR}${VALUE}${SED_SEPARATOR}g" -i $FILE_PATH
+  local SYSTEM="$(uname -s)"
+  case "${SYSTEM}" in
+    Linux*)
+        sed "s${SED_SEPARATOR}${EXPRESSION}${SED_SEPARATOR}${VALUE}${SED_SEPARATOR}g" -i $FILE_PATH
+        ;;
+    Darwin*)
+        if ! command -v gsed &> /dev/null
+        then
+            echo "brew install gnu-sed"
+            exit 1
+        fi
+
+        gsed "s${SED_SEPARATOR}${EXPRESSION}${SED_SEPARATOR}${VALUE}${SED_SEPARATOR}g" -i $FILE_PATH
+      ;;
+    *)
+      echo "Unknown $SYSTEM system"
+  esac
 }
 
 
