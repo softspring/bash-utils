@@ -19,7 +19,7 @@ function saveEnvVariable {
 
   if egrep -q "^$PROPERTY=" $ENV_FILE
   then
-    replaceInFile "^$PROPERTY=.*\$" "$PROPERTY=$VALUE" $ENV_FILE $SED_SEPARATOR
+    replaceInFile "^$PROPERTY=.*\\\$" "$PROPERTY=$VALUE" $ENV_FILE $SED_SEPARATOR
     message "Saved $PROPERTY into $ENV_FILE\n"
   else
     echo "$PROPERTY=$VALUE" >> $ENV_FILE

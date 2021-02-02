@@ -127,6 +127,11 @@ function error {
 function runSed {
   local COMMAND=$1
 
+  if [ ! -z $DEBUG_SED ]
+  then
+    echo "sed/gsed $COMMAND"
+  fi
+
   local SYSTEM="$(uname -s)"
   case "${SYSTEM}" in
     Linux*)
