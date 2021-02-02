@@ -2,15 +2,21 @@
 
 function promptValue {
   local VARIABLE_NAME=$1
+  local DESCRIPTION=$2
 
   message "Checking $VARIABLE_NAME value: "
   if [[ -z ${!VARIABLE_NAME} ]]
   then
     warning "MISSING\n"
 
+    if [[ -z $DESCRIPTION ]]
+    then
+      message $DESCRIPTION
+    fi
+
     until [[ ${!VARIABLE_NAME} ]]
     do
-      read -p 'VARIABLE_NAME: ' $VARIABLE_NAME
+      read -p "$VARIABLE_NAME: " $VARIABLE_NAME
     done
   else
     success "OK\n"
