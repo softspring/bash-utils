@@ -167,7 +167,7 @@ function deleteInFile {
   local SED_SEPARATOR="${3:-/}"
   local OPTIONS=$4
 
-  runSed "\"s${SED_SEPARATOR}${EXPRESSION}${SED_SEPARATOR}d\" -i $OPTIONS $FILE_PATH"
+  runSed "\"${SED_SEPARATOR}${EXPRESSION}${SED_SEPARATOR}d\" -i $OPTIONS $FILE_PATH"
 }
 
 function test_messages {
