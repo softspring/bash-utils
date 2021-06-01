@@ -213,7 +213,7 @@ function gcloudBucketCreate {
   if [[ $(gcloudBucketExists $PROJECT $BUCKET_NAME) == 0 ]]
   then
     warning "MISSING\n"
-    gsutil mb -p $PROJECT -c $TYPE -l $REGION -b on gs://$IMAGES_BUCKET
+    gsutil mb -p $PROJECT -c $TYPE -l $REGION -b on gs://$BUCKET_NAME
   else
     success "OK\n"
   fi
@@ -253,7 +253,7 @@ function gcloudBucketPermission {
   local TO=$3
   local PERMISSION=$4
 
-  gsutil iam ch $TO:$PERMISSION gs://$IMAGES_BUCKET
+  gsutil iam ch $TO:$PERMISSION gs://$BUCKET_NAME
 }
 
 # ######################################################################
