@@ -201,6 +201,55 @@ function gcloudServiceAccountGrantRoleServiceAccount {
 }
 
 # ######################################################################
+# SECRETS
+
+function gcloudSecretsCreateFromFile {
+  local PROJECT=$1
+  local SECRET_NAME=$2
+  local FILE=$3
+  local ARGUMENTS=${4:-''}
+
+  message "Checking $SECRET_NAME secret in $PROJECT: "
+  if [[ $(gcloudSecretExists $PROJECT $SECRET_NAME) == 0 ]]
+  then
+    warning "MISSING\n"
+    gcloud secrets create $SECRET_NAME \
+     --project=$BUILD_PROJECT \
+     --data-file=$FILE $ARGUMENTS
+  else
+    success "OK\n"
+  fi
+}
+
+function gcloudSecretsDelete {
+  local PROJECT=$1
+  local SECRET_NAME=$2
+
+  message "Checking $SECRET_NAME secret in $PROJECT: "
+  if [[ $(gcloudSecretExists $PROJECT $SECRET_NAME) == 1 ]]
+  then
+    gcloud secrets delete $SECRET_NAME \
+     --project=$BUILD_PROJECT -q
+     success "DELETED\n"
+  else
+    success "OK\n"
+  fi
+}
+
+function gcloudSecretExists {
+  local PROJECT=$1
+  local SECRET_NAME=$2
+
+  if [ $(gcloud secrets list --format "value(name)" --filter "name:$SECRET_NAME" --project=$PROJECT | wc -l) -eq 1 ]
+  then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
+
+# ######################################################################
 # GCS
 
 function gcloudBucketCreate {
