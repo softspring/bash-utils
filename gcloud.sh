@@ -300,9 +300,9 @@ function gcloudSecretsUpsertFromFile {
      --project=$BUILD_PROJECT \
      --data-file=$FILE $ARGUMENTS
   else
-    gcloud secrets version add $SECRET_NAME \
+    gcloud secrets versions add $SECRET_NAME \
      --project=$BUILD_PROJECT \
-     --data-file=$FILE $ARGUMENTS
+     --data-file=$FILE
     success "UPDATED\n"
   fi
 }
@@ -339,9 +339,9 @@ function gcloudSecretsUpsert {
      --project=$BUILD_PROJECT \
      --data-file=- $ARGUMENTS
   else
-    echo -n $VALUE | gcloud secrets version add $SECRET_NAME \
+    echo -n $VALUE | gcloud secrets versions add $SECRET_NAME \
      --project=$BUILD_PROJECT \
-     --data-file=- $ARGUMENTS
+     --data-file=-
     success "UPDATED\n"
   fi
 }
