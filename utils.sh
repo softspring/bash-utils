@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+function generateHash {
+  local LENGTH=${1:-15}
+
+  openssl rand -base64 $LENGTH
+}
+
 function addDomainToEtcHosts {
   local IP_DEFAULT='127.0.0.1'
   local DOMAIN=$1
