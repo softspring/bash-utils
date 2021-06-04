@@ -46,7 +46,7 @@ function gcloudAppEngineDeployApp {
 
   if [ $VERSION_NAME ]
   then
-    ARGUMENTS=" $ARGUMENTS"
+    ARGUMENTS="--version=$VERSION_NAME $ARGUMENTS"
   fi
 
   gcloud app deploy $FILE $ARGUMENTS --project=$GCLOUD_PROJECT
