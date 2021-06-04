@@ -5,7 +5,7 @@
 
 function gcloudProjectCreate {
   local PROJECT=$1
-  local PROJECT_NAME=$2
+  local PROJECT_NAME=${2-"$PROJECT"}
   local ORGANIZATION_ID=${3-''}
 
   if [ -z $ORGANIZATION_ID ]
@@ -38,6 +38,36 @@ function gcloudAppengineCreate {
   gcloud app create --project=$PROJECT --region=$REGION || true
 }
 
+function gcloudAppengineDeployApp {
+  local PROJECT=$1
+  local VERSION_NAME=$2
+  local FILE=${3:-app.yaml}
+  local ARGUMENTS=${4:-"--quiet --no-cache --no-promote"}
+
+  if [ $VERSION_NAME ]
+  then
+    ARGUMENTS=" $ARGUMENTS"
+  fi
+
+  gcloud app deploy $FILE $ARGUMENTS --project=$GCLOUD_PROJECT
+}
+
+function gcloudAppengineDeployCron {
+  local PROJECT=$1
+  local FILE=${2:-cron.yaml}
+  local ARGUMENTS=${3:-""}
+
+  gcloud app deploy $FILE $ARGUMENTS --project=$GCLOUD_PROJECT
+}
+
+function gcloudAppengineSetAllTraffic {
+  local PROJECT=$1
+  local VERSION_NAME=$2
+  local SERVICE=${3:-default}
+
+  gcloud app services set-traffic $SERVICE --splits $VERSION_NAME=1 --quiet --project=$PROJECT
+}
+
 # ######################################################################
 # CLOUD SQL
 
@@ -47,15 +77,17 @@ function gcloudSqlInstanceCreate {
   local MACHINE_TYPE=$3
   local REGION=$4
   local ROOT_PASSWORD=$5
+  local ARGUMENTS=${6:-''}
+  local DATABASE_VERSION=${7:-'MYSQL_5_7'}
 
-  if [ $(gcloud sql instances list --format "value(name)" --filter "name:$INSTANCE_NAME" --project=$PROJECT | wc -l) -eq 0 ]
+  if [[ $(gcloudSqlInstanceExists $PROJECT $INSTANCE_NAME) == 0 ]]
   then
     message "Create SQL instance\n"
     gcloud sql instances create $INSTANCE_NAME \
       --tier=$MACHINE_TYPE \
       --region=$REGION \
       --storage-type=SSD \
-      --database-version=MYSQL_5_7 \
+      --database-version=$DATABASE_VERSION \
       --storage-auto-increase \
       --backup-start-time "00:00" \
       --root-password "$ROOT_PASSWORD" \
@@ -63,11 +95,23 @@ function gcloudSqlInstanceCreate {
       --maintenance-window-day "SUNDAY"	\
       --maintenance-window-hour	5 \
       --maintenance-release-channel	"production"	\
-      --project=$PROJECT
+      --project=$PROJECT $ARGUMENTS
     #  --retained-backups-count		 \
     #  --retained-transaction-log-days		\
   else
     message "SQL instance is OK\n"
+  fi
+}
+
+function gcloudSqlInstanceExists {
+  local PROJECT=$1
+  local INSTANCE_NAME=$2
+
+  if [ $(gcloud sql instances list --format "value(name)" --filter "name:$INSTANCE_NAME" --project=$PROJECT | wc -l) -eq 1 ]
+  then
+    echo 1
+  else
+    echo 0
   fi
 }
 
@@ -94,7 +138,7 @@ function gcloudSqlUserCreate {
   local USERNAME=$3
   local PASSWORD=$4
 
-  if [ $(gcloud sql users list --instance=$INSTANCE_NAME --format "value(name)" --filter "name:$USERNAME" --project=$PROJECT | wc -l) -eq 0 ]
+  if [[ $(gcloudSqlUserExists $PROJECT $INSTANCE_NAME $USERNAME) == 0 ]]
   then
     message "Create user\n"
     gcloud sql users create $USERNAME --instance=$INSTANCE_NAME \
@@ -103,6 +147,19 @@ function gcloudSqlUserCreate {
       --host=%
   else
     message "User is OK\n"
+  fi
+}
+
+function gcloudSqlUserExists {
+  local PROJECT=$1
+  local INSTANCE_NAME=$2
+  local USERNAME=$3
+
+  if [ $(gcloud sql users list --instance=$INSTANCE_NAME --format "value(name)" --filter "name:$USERNAME" --project=$PROJECT | wc -l) -eq 1 ]
+  then
+    echo 1
+  else
+    echo 0
   fi
 }
 
@@ -115,6 +172,7 @@ function gcloudRedisCreate {
   local INSTANCE_SIZE=$3
   local INSTANCE_REGION=$4
   local INSTANCE_VERSION=$5
+  local ARGUMENTS=${6:-''}
 
   if [ $(gcloud redis instances list --format "value(name)" --filter "name:$INSTANCE_NAME" --region=$INSTANCE_REGION --project=$PROJECT | wc -l) -eq 0 ]
   then
@@ -123,7 +181,7 @@ function gcloudRedisCreate {
       --size=$INSTANCE_SIZE \
       --region=$INSTANCE_REGION \
       --redis-version=$INSTANCE_VERSION \
-      --project=$PROJECT
+      --project=$PROJECT $ARGUMENTS
   else
     message "Redis $INSTANCE_NAME instance on $PROJECT is OK\n"
   fi
@@ -200,6 +258,13 @@ function gcloudServiceAccountGrantRoleServiceAccount {
     --project=$PROJECT
 }
 
+function gcloudServiceAccountActivateAuth {
+  local SERVICE_ACCOUNT=$1
+  local KEY_FILE=$2
+
+  gcloud auth activate-service-account $SERVICE_ACCOUNT --key-file $KEY_FILE
+}
+
 # ######################################################################
 # SECRETS
 
@@ -221,6 +286,66 @@ function gcloudSecretsCreateFromFile {
   fi
 }
 
+function gcloudSecretsUpsertFromFile {
+  local PROJECT=$1
+  local SECRET_NAME=$2
+  local FILE=$3
+  local ARGUMENTS=${4:-''}
+
+  message "Checking $SECRET_NAME secret in $PROJECT: "
+  if [[ $(gcloudSecretExists $PROJECT $SECRET_NAME) == 0 ]]
+  then
+    warning "MISSING\n"
+    gcloud secrets create $SECRET_NAME \
+     --project=$BUILD_PROJECT \
+     --data-file=$FILE $ARGUMENTS
+  else
+    gcloud secrets version add $SECRET_NAME \
+     --project=$BUILD_PROJECT \
+     --data-file=$FILE $ARGUMENTS
+    success "UPDATED\n"
+  fi
+}
+
+function gcloudSecretsCreate {
+  local PROJECT=$1
+  local SECRET_NAME=$2
+  local VALUE=$3
+  local ARGUMENTS=${4:-''}
+
+  message "Checking $SECRET_NAME secret in $PROJECT: "
+  if [[ $(gcloudSecretExists $PROJECT $SECRET_NAME) == 0 ]]
+  then
+    warning "MISSING\n"
+    echo -n $VALUE | gcloud secrets create $SECRET_NAME \
+     --project=$BUILD_PROJECT \
+     --data-file=- $ARGUMENTS
+  else
+    success "OK\n"
+  fi
+}
+
+function gcloudSecretsUpsert {
+  local PROJECT=$1
+  local SECRET_NAME=$2
+  local VALUE=$3
+  local ARGUMENTS=${4:-''}
+
+  message "Checking $SECRET_NAME secret in $PROJECT: "
+  if [[ $(gcloudSecretExists $PROJECT $SECRET_NAME) == 0 ]]
+  then
+    warning "MISSING\n"
+    echo -n $VALUE | gcloud secrets create $SECRET_NAME \
+     --project=$BUILD_PROJECT \
+     --data-file=- $ARGUMENTS
+  else
+    echo -n $VALUE | gcloud secrets version add $SECRET_NAME \
+     --project=$BUILD_PROJECT \
+     --data-file=- $ARGUMENTS
+    success "UPDATED\n"
+  fi
+}
+
 function gcloudSecretsDelete {
   local PROJECT=$1
   local SECRET_NAME=$2
@@ -232,7 +357,7 @@ function gcloudSecretsDelete {
      --project=$BUILD_PROJECT -q
      success "DELETED\n"
   else
-    success "OK\n"
+    success "IGNORED\n"
   fi
 }
 
@@ -325,6 +450,7 @@ function gcloudVpcConnectorCreate {
   local NETWORK=$3
   local REGION=$4
   local IP_RANGE=$5
+  local ARGUMENTS=${6:-''}
 
   if [ $(gcloud compute networks vpc-access connectors list --format "value(name)" --filter "name:$CONNECTOR_NAME" --region=$REGION --project=$PROJECT | wc -l) -eq 0 ]
   then
@@ -333,7 +459,7 @@ function gcloudVpcConnectorCreate {
       --network=$NETWORK \
       --region=$REGION \
       --range="$IP_RANGE" \
-      --project=$PROJECT
+      --project=$PROJECT $ARGUMENTS
   else
     echo "VPC connector $CONNECTOR_NAME on $PROJECT is OK"
   fi
