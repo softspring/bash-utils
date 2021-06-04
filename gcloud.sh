@@ -31,14 +31,14 @@ function gcloudProjectCreate {
 # ######################################################################
 # APPENGINE
 
-function gcloudAppengineCreate {
+function gcloudAppEngineCreate {
   local PROJECT=$1
   local REGION=$2
 
   gcloud app create --project=$PROJECT --region=$REGION || true
 }
 
-function gcloudAppengineDeployApp {
+function gcloudAppEngineDeployApp {
   local PROJECT=$1
   local VERSION_NAME=$2
   local FILE=${3:-app.yaml}
@@ -52,7 +52,7 @@ function gcloudAppengineDeployApp {
   gcloud app deploy $FILE $ARGUMENTS --project=$GCLOUD_PROJECT
 }
 
-function gcloudAppengineDeployCron {
+function gcloudAppEngineDeployCron {
   local PROJECT=$1
   local FILE=${2:-cron.yaml}
   local ARGUMENTS=${3:-""}
@@ -60,7 +60,7 @@ function gcloudAppengineDeployCron {
   gcloud app deploy $FILE $ARGUMENTS --project=$GCLOUD_PROJECT
 }
 
-function gcloudAppengineSetAllTraffic {
+function gcloudAppEngineSetAllTraffic {
   local PROJECT=$1
   local VERSION_NAME=$2
   local SERVICE=${3:-default}
