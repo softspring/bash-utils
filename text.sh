@@ -124,6 +124,25 @@ function error {
   message "$1" "error"
 }
 
+function die {
+  local MESSAGE=$1
+  local EXIT_CODE=${2:-1}
+
+  error "$MESSAGE"
+  exit $EXIT_CODE
+}
+
+function dieIfEmpty {
+  local VARIABLE=$1
+  local MESSAGE=$2
+  local EXIT_CODE=$3
+
+  if [ ! $VARIABLE ]
+  then
+    die $MESSAGE $EXIT_CODE
+  fi
+}
+
 function runSed {
   local COMMAND=$1
 
