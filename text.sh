@@ -139,7 +139,7 @@ function dieIfEmpty {
 
   if [ ! $VARIABLE ]
   then
-    die $MESSAGE $EXIT_CODE
+    die "$MESSAGE" $EXIT_CODE
   fi
 }
 
