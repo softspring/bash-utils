@@ -428,8 +428,8 @@ function gcloudPubSubTopicExists {
   fi
 }
 
-# gcloudSubscriptionCreatePush $PROJECT $SUBSCRIPTION_NAME $TOPIC_NAME $PUSH_ENDPOINT $ARGUMENTS=""
-function gcloudSubscriptionCreatePush {
+# gcloudPubSubSubscriptionCreatePush $PROJECT $SUBSCRIPTION_NAME $TOPIC_NAME $PUSH_ENDPOINT $ARGUMENTS=""
+function gcloudPubSubSubscriptionCreatePush {
   local PROJECT=$1
   local SUBSCRIPTION_NAME=$2
   local TOPIC_NAME=$3
@@ -440,9 +440,27 @@ function gcloudSubscriptionCreatePush {
   if [[ $(gcloudPubSubSubscriptionExists $PROJECT $SUBSCRIPTION_NAME) == 0 ]]
   then
     warning "MISSING\n"
-    gcloud pubsub subscriptions create $SUBSCRIPTION_NAME --project=$PROJECT --topic=$TOPIC_NAME --project=$PROJECT --push-endpoint=$PUSH_ENDPOINT $ARGUMENTS
+    gcloud pubsub subscriptions create $SUBSCRIPTION_NAME --project=$PROJECT --topic=$TOPIC_NAME --push-endpoint=$PUSH_ENDPOINT $ARGUMENTS
   else
     success "OK\n"
+  fi
+}
+
+# gcloudPubSubSubscriptionUpsertPush $PROJECT $SUBSCRIPTION_NAME $TOPIC_NAME $PUSH_ENDPOINT $ARGUMENTS=""
+function gcloudPubSubSubscriptionUpsertPush {
+  local PROJECT=$1
+  local SUBSCRIPTION_NAME=$2
+  local TOPIC_NAME=$3
+  local PUSH_ENDPOINT=$4
+  local ARGUMENTS=${5:-''}
+
+  message "Checking $SUBSCRIPTION_NAME subscription in $PROJECT: "
+  if [[ $(gcloudPubSubSubscriptionExists $PROJECT $SUBSCRIPTION_NAME) == 0 ]]
+  then
+    warning "UPDATE\n"
+    gcloudPubSubSubscriptionCreatePush $PROJECT $SUBSCRIPTION_NAME $TOPIC_NAME $PUSH_ENDPOINT "$ARGUMENTS"
+  else
+    gcloud pubsub subscriptions update $SUBSCRIPTION_NAME --project=$PROJECT --push-endpoint=$PUSH_ENDPOINT $ARGUMENTS
   fi
 }
 
