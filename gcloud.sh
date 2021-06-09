@@ -506,14 +506,21 @@ function gcloudRunServiceDeploy {
   local IMAGE=$3
   local ARGUMENTS=${4:-"--quiet --no-allow-unauthenticated"}
   local ENV_VARS=$5
+  local PLATFORM=${6:-"managed"}
+  local REGION=$7
 
   if [ $ENV_VARS ]
   then
     ARGUMENTS="--set-env-vars=$ENV_VARS $ARGUMENTS"
   fi
 
+  if [ $REGION ]
+  then
+    ARGUMENTS="--region=$REGION $ARGUMENTS"
+  fi
+
   message "Deploy $SERVICE_NAME cloud run service\n"
-  gcloud run deploy $SERVICE_NAME --image $IMAGE --project $PROJECT $ARGUMENTS
+  gcloud run deploy $SERVICE_NAME --image $IMAGE --project $PROJECT --platform=$PLATFORM $ARGUMENTS
 }
 
 # ######################################################################
