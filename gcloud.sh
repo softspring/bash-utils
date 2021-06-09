@@ -488,18 +488,26 @@ function gcloudRunServiceGetUrl {
   echo "$(gcloud run services list --platform managed --format "value(status.url)" --filter "metadata.name:$SERVICE_NAME" --project=$PROJECT)/"
 }
 
-# gcloudRunServiceGrantRoleServiceAccount $PROJECT $SERVICE_NAME $SERVICE_ACCOUNT $ROLE
+# gcloudRunServiceGrantRoleServiceAccount $PROJECT $SERVICE_NAME $SERVICE_ACCOUNT $ROLE $ARGUMENTS="" $PLATFORM="managed" [$REGION]
 function gcloudRunServiceGrantRoleServiceAccount {
   local PROJECT=$1
   local SERVICE_NAME=$2
   local SERVICE_ACCOUNT=$3
   local ROLE=$4
+  local ARGUMENTS=${5:-""}
+  local PLATFORM=${6:-"managed"}
+  local REGION=$7
+
+  if [ $REGION ]
+  then
+    ARGUMENTS="--region=$REGION $ARGUMENTS"
+  fi
 
   message "Grant $ROLE to $SERVICE_ACCOUNT on $SERVICE_NAME cloud run service\n"
-  gcloud run services add-iam-policy-binding $SERVICE_NAME --member=serviceAccount:$SERVICE_ACCOUNT --role=$ROLE --project=$PROJECT
+  gcloud run services add-iam-policy-binding $SERVICE_NAME --member=serviceAccount:$SERVICE_ACCOUNT --role=$ROLE --project=$PROJECT --platform=$PLATFORM
 }
 
-# gcloudRunServiceDeploy $PROJECT $SERVICE_NAME $IMAGE $ARGUMENTS="--quiet --no-allow-unauthenticated" [$ENV_VARS]
+# gcloudRunServiceDeploy $PROJECT $SERVICE_NAME $IMAGE $ARGUMENTS="--quiet --no-allow-unauthenticated" [$ENV_VARS] $PLATFORM="managed" [$REGION]
 function gcloudRunServiceDeploy {
   local PROJECT=$1
   local SERVICE_NAME=$2
