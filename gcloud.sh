@@ -498,13 +498,18 @@ function gcloudRunServiceGrantRoleServiceAccount {
   local PLATFORM=${6:-"managed"}
   local REGION=$7
 
+  ARGUMENTS="--member=serviceAccount:$SERVICE_ACCOUNT $ARGUMENTS"
+  ARGUMENTS="--role=$ROLE $ARGUMENTS"
+  ARGUMENTS="--project=$PROJECT $ARGUMENTS"
+  ARGUMENTS="--platform=$PLATFORM $ARGUMENTS"
+
   if [ $REGION ]
   then
     ARGUMENTS="--region=$REGION $ARGUMENTS"
   fi
 
   message "Grant $ROLE to $SERVICE_ACCOUNT on $SERVICE_NAME cloud run service\n"
-  gcloud run services add-iam-policy-binding $SERVICE_NAME --member=serviceAccount:$SERVICE_ACCOUNT --role=$ROLE --project=$PROJECT --platform=$PLATFORM
+  gcloud run services add-iam-policy-binding $SERVICE_NAME $ARGUMENTS
 }
 
 # gcloudRunServiceDeploy $PROJECT $SERVICE_NAME $IMAGE $ARGUMENTS="--quiet --no-allow-unauthenticated" [$ENV_VARS] $PLATFORM="managed" [$REGION]
