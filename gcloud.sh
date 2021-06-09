@@ -3,6 +3,7 @@
 # ######################################################################
 # PROJECTS
 
+# gcloudProjectCreate $PROJECT $PROJECT_NAME="$PROJECT" $ORGANIZATION_ID=""
 function gcloudProjectCreate {
   local PROJECT=$1
   local PROJECT_NAME=${2-"$PROJECT"}
@@ -31,6 +32,7 @@ function gcloudProjectCreate {
 # ######################################################################
 # APPENGINE
 
+# gcloudAppEngineCreate $PROJECT $REGION
 function gcloudAppEngineCreate {
   local PROJECT=$1
   local REGION=$2
@@ -38,6 +40,7 @@ function gcloudAppEngineCreate {
   gcloud app create --project=$PROJECT --region=$REGION || true
 }
 
+# gcloudAppEngineDeployApp $PROJECT [$VERSION_NAME] $FILE="app.yaml" $ARGUMENTS="--quiet --no-cache --no-promote"
 function gcloudAppEngineDeployApp {
   local PROJECT=$1
   local VERSION_NAME=$2
@@ -52,6 +55,7 @@ function gcloudAppEngineDeployApp {
   gcloud app deploy $FILE $ARGUMENTS --project=$GCLOUD_PROJECT
 }
 
+# gcloudAppEngineDeployCron $PROJECT $FILE="cron.yaml" $ARGUMENTS=""
 function gcloudAppEngineDeployCron {
   local PROJECT=$1
   local FILE=${2:-cron.yaml}
@@ -60,6 +64,7 @@ function gcloudAppEngineDeployCron {
   gcloud app deploy $FILE $ARGUMENTS --project=$GCLOUD_PROJECT
 }
 
+# gcloudAppEngineSetAllTraffic $PROJECT $VERSION_NAME $SERVICE="default"
 function gcloudAppEngineSetAllTraffic {
   local PROJECT=$1
   local VERSION_NAME=$2
@@ -71,6 +76,7 @@ function gcloudAppEngineSetAllTraffic {
 # ######################################################################
 # CLOUD SQL
 
+# gcloudSqlInstanceCreate $PROJECT $INSTANCE_NAME $MACHINE_TYPE $REGION $ROOT_PASSWORD $ARGUMENTS="" $DATABASE_VERSION="MYSQL_5_7"
 function gcloudSqlInstanceCreate {
   local PROJECT=$1
   local INSTANCE_NAME=$2
@@ -103,6 +109,7 @@ function gcloudSqlInstanceCreate {
   fi
 }
 
+# gcloudSqlInstanceExists $PROJECT $INSTANCE_NAME
 function gcloudSqlInstanceExists {
   local PROJECT=$1
   local INSTANCE_NAME=$2
@@ -115,6 +122,7 @@ function gcloudSqlInstanceExists {
   fi
 }
 
+# gcloudSqlDatabaseCreate $PROJECT $INSTANCE_NAME $DATABASE_NAME
 function gcloudSqlDatabaseCreate {
   local PROJECT=$1
   local INSTANCE_NAME=$2
@@ -132,6 +140,7 @@ function gcloudSqlDatabaseCreate {
   fi
 }
 
+# gcloudSqlUserCreate $PROJECT $INSTANCE_NAME $USERNAME $PASSWORD
 function gcloudSqlUserCreate {
   local PROJECT=$1
   local INSTANCE_NAME=$2
@@ -150,6 +159,7 @@ function gcloudSqlUserCreate {
   fi
 }
 
+# gcloudSqlUserExists $PROJECT $INSTANCE_NAME $USERNAME
 function gcloudSqlUserExists {
   local PROJECT=$1
   local INSTANCE_NAME=$2
@@ -166,6 +176,7 @@ function gcloudSqlUserExists {
 # ######################################################################
 # MEMORYSTORE
 
+# gcloudRedisCreate $PROJECT $INSTANCE_NAME $INSTANCE_SIZE $INSTANCE_REGION $INSTANCE_VERSION $ARGUMENTS=""
 function gcloudRedisCreate {
   local PROJECT=$1
   local INSTANCE_NAME=$2
@@ -190,6 +201,7 @@ function gcloudRedisCreate {
 # ######################################################################
 # SERVICE ACCOUNTS AND IAM
 
+# gcloudServiceAccountCreate $PROJECT $SERVICE_ACCOUNT_ID $DISPLAY_NAME=""
 function gcloudServiceAccountCreate {
   local PROJECT=$1
   local SERVICE_ACCOUNT_ID=$2
@@ -207,6 +219,7 @@ function gcloudServiceAccountCreate {
   fi
 }
 
+# gcloudServiceAccountExists $PROJECT $SERVICE_ACCOUNT_ID
 function gcloudServiceAccountExists {
   local PROJECT=$1
   local SERVICE_ACCOUNT_ID=$2
@@ -219,6 +232,7 @@ function gcloudServiceAccountExists {
   fi
 }
 
+# gcloudServiceAccountKeyCreate $PROJECT $SERVICE_ACCOUNT_ID $KEY_FILE
 function gcloudServiceAccountKeyCreate {
   local PROJECT=$1
   local SERVICE_ACCOUNT_ID=$2
@@ -236,6 +250,7 @@ function gcloudServiceAccountKeyCreate {
   fi
 }
 
+# gcloudProjectGrantRoleServiceAccount $PROJECT $SERVICE_ACCOUNT $ROLE
 function gcloudProjectGrantRoleServiceAccount {
   local PROJECT=$1
   local SERVICE_ACCOUNT=$2
@@ -245,6 +260,7 @@ function gcloudProjectGrantRoleServiceAccount {
   gcloud projects add-iam-policy-binding $PROJECT --member=serviceAccount:$SERVICE_ACCOUNT --role=$ROLE
 }
 
+# gcloudServiceAccountGrantRoleServiceAccount $PROJECT $RESOURCE_SERVICE_ACCOUNT $SERVICE_ACCOUNT $ROLE
 function gcloudServiceAccountGrantRoleServiceAccount {
   local PROJECT=$1
   local RESOURCE_SERVICE_ACCOUNT=$2
@@ -258,6 +274,7 @@ function gcloudServiceAccountGrantRoleServiceAccount {
     --project=$PROJECT
 }
 
+# gcloudServiceAccountActivateAuth $PROJECT $KEY_FILE
 function gcloudServiceAccountActivateAuth {
   local SERVICE_ACCOUNT=$1
   local KEY_FILE=$2
@@ -268,6 +285,7 @@ function gcloudServiceAccountActivateAuth {
 # ######################################################################
 # SECRETS
 
+# gcloudSecretsCreateFromFile $PROJECT $SECRET_NAME $FILE $ARGUMENTS=""
 function gcloudSecretsCreateFromFile {
   local PROJECT=$1
   local SECRET_NAME=$2
@@ -286,6 +304,7 @@ function gcloudSecretsCreateFromFile {
   fi
 }
 
+# gcloudSecretsUpsertFromFile $PROJECT $SECRET_NAME $FILE $ARGUMENTS=""
 function gcloudSecretsUpsertFromFile {
   local PROJECT=$1
   local SECRET_NAME=$2
@@ -307,6 +326,7 @@ function gcloudSecretsUpsertFromFile {
   fi
 }
 
+# gcloudSecretsCreate $PROJECT $SECRET_NAME $VALUE $ARGUMENTS=""
 function gcloudSecretsCreate {
   local PROJECT=$1
   local SECRET_NAME=$2
@@ -325,6 +345,7 @@ function gcloudSecretsCreate {
   fi
 }
 
+# gcloudSecretsUpsert $PROJECT $SECRET_NAME $VALUE $ARGUMENTS=""
 function gcloudSecretsUpsert {
   local PROJECT=$1
   local SECRET_NAME=$2
@@ -346,6 +367,7 @@ function gcloudSecretsUpsert {
   fi
 }
 
+# gcloudSecretsDelete $PROJECT $SECRET_NAME
 function gcloudSecretsDelete {
   local PROJECT=$1
   local SECRET_NAME=$2
@@ -361,6 +383,7 @@ function gcloudSecretsDelete {
   fi
 }
 
+# gcloudSecretExists $PROJECT $SECRET_NAME
 function gcloudSecretExists {
   local PROJECT=$1
   local SECRET_NAME=$2
@@ -373,10 +396,112 @@ function gcloudSecretExists {
   fi
 }
 
+# ######################################################################
+# PUBSUB
+
+# gcloudTopicCreate $PROJECT $TOPIC_NAME $ARGUMENTS=""
+function gcloudTopicCreate {
+  local PROJECT=$1
+  local TOPIC_NAME=$2
+  local ARGUMENTS=${3:-''}
+
+  message "Checking $TOPIC_NAME topic in $PROJECT: "
+  if [[ $(gcloudPubSubTopicExists $PROJECT $TOPIC_NAME) == 0 ]]
+  then
+    warning "MISSING\n"
+    gcloud pubsub topics create $TOPIC_NAME --project=$PROJECT $ARGUMENTS
+  else
+    success "OK\n"
+  fi
+}
+
+# gcloudPubSubTopicExists $PROJECT $TOPIC_NAME
+function gcloudPubSubTopicExists {
+  local PROJECT=$1
+  local TOPIC_NAME=$2
+
+  if [ $(gcloud pubsub topics list --format "value(name)" --filter "name:$TOPIC_NAME" --project=$PROJECT | wc -l) -eq 1 ]
+  then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
+# gcloudSubscriptionCreatePush $PROJECT $SUBSCRIPTION_NAME $TOPIC_NAME $PUSH_ENDPOINT $ARGUMENTS=""
+function gcloudSubscriptionCreatePush {
+  local PROJECT=$1
+  local SUBSCRIPTION_NAME=$2
+  local TOPIC_NAME=$3
+  local PUSH_ENDPOINT=$4
+  local ARGUMENTS=${5:-''}
+
+  message "Checking $SUBSCRIPTION_NAME subscription in $PROJECT: "
+  if [[ $(gcloudPubSubSubscriptionExists $PROJECT $SUBSCRIPTION_NAME) == 0 ]]
+  then
+    warning "MISSING\n"
+    gcloud pubsub subscriptions create $SUBSCRIPTION_NAME --project=$PROJECT --topic=$TOPIC_NAME --project=$PROJECT --push-endpoint=$PUSH_ENDPOINT $ARGUMENTS
+  else
+    success "OK\n"
+  fi
+}
+
+# gcloudPubSubSubscriptionExists $PROJECT $SUBSCRIPTION_NAME
+function gcloudPubSubSubscriptionExists {
+  local PROJECT=$1
+  local SUBSCRIPTION_NAME=$2
+
+  if [ $(gcloud pubsub subscriptions list --format "value(name)" --filter "name:$SUBSCRIPTION_NAME" --project=$PROJECT | wc -l) -eq 1 ]
+  then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
+# ######################################################################
+# CLOUD RUN
+
+# gcloudRunServiceGetUrl $PROJECT $SERVICE_NAME
+function gcloudRunServiceGetUrl {
+  local PROJECT=$1
+  local SERVICE_NAME=$2
+
+  echo "$(gcloud run services list --platform managed --format "value(status.url)" --filter "metadata.name:$SERVICE_NAME" --project=$PROJECT)/"
+}
+
+# gcloudRunServiceGrantRoleServiceAccount $PROJECT $SERVICE_NAME $SERVICE_ACCOUNT $ROLE
+function gcloudRunServiceGrantRoleServiceAccount {
+  local PROJECT=$1
+  local SERVICE_NAME=$2
+  local SERVICE_ACCOUNT=$3
+  local ROLE=$4
+
+  message "Grant $ROLE to $SERVICE_ACCOUNT on $SERVICE_NAME cloud run service\n"
+  gcloud run services add-iam-policy-binding $SERVICE_NAME --member=serviceAccount:$SERVICE_ACCOUNT --role=$ROLE --project=$PROJECT
+}
+
+# gcloudRunServiceDeploy $PROJECT $SERVICE_NAME $IMAGE $ARGUMENTS="--quiet --no-allow-unauthenticated" [$ENV_VARS]
+function gcloudRunServiceDeploy {
+  local PROJECT=$1
+  local SERVICE_NAME=$2
+  local IMAGE=$3
+  local ARGUMENTS=${4:-"--quiet --no-allow-unauthenticated"}
+  local ENV_VARS=$5
+
+  if [ $ENV_VARS ]
+  then
+    ARGUMENTS="--set-env-vars=$ENV_VARS $ARGUMENTS"
+  fi
+
+  message "Deploy $SERVICE_NAME cloud run service\n"
+  gcloud run deploy $SERVICE_NAME --image $IMAGE --project $PROJECT $ARGUMENTS
+}
 
 # ######################################################################
 # GCS
 
+# gcloudBucketCreate $PROJECT $BUCKET_NAME $TYPE="STANDARD" $REGION="EUROPE-WEST1"
 function gcloudBucketCreate {
   local PROJECT=$1
   local BUCKET_NAME=$2
@@ -393,6 +518,7 @@ function gcloudBucketCreate {
   fi
 }
 
+# gcloudBucketExists $PROJECT $BUCKET_NAME
 function gcloudBucketExists {
   local PROJECT=$1
   local BUCKET_NAME=$2
@@ -405,6 +531,7 @@ function gcloudBucketExists {
   fi
 }
 
+# gcloudBucketServiceAccountPermission $PROJECT $BUCKET_NAME $SERVICE_ACCOUNT_ID $PERMISSION
 function gcloudBucketServiceAccountPermission {
   local PROJECT=$1
   local BUCKET_NAME=$2
@@ -414,6 +541,7 @@ function gcloudBucketServiceAccountPermission {
   gcloudBucketPermission $PROJECT $BUCKET_NAME "serviceAccount:$SERVICE_ACCOUNT_ID@$PROJECT.iam.gserviceaccount.com" $PERMISSION
 }
 
+# gcloudBucketSetPublic $PROJECT $BUCKET_NAME
 function gcloudBucketSetPublic {
   local PROJECT=$1
   local BUCKET_NAME=$2
@@ -421,6 +549,7 @@ function gcloudBucketSetPublic {
   gcloudBucketPermission $PROJECT $BUCKET_NAME allUsers objectViewer
 }
 
+# gcloudBucketPermission $PROJECT $BUCKET_NAME $TO $PERMISSION
 function gcloudBucketPermission {
   local PROJECT=$1
   local BUCKET_NAME=$2
@@ -433,6 +562,7 @@ function gcloudBucketPermission {
 # ######################################################################
 # APIS
 
+# gcloudApiEnable $PROJECT $API
 function gcloudApiEnable {
   local PROJECT=$1
   local API=$2
@@ -444,6 +574,7 @@ function gcloudApiEnable {
 # ######################################################################
 # VPC
 
+# gcloudVpcConnectorCreate  $PROJECT $CONNECTOR_NAME $NETWORK $REGION $IP_RANGE $ARGUMENTS=""
 function gcloudVpcConnectorCreate {
   local PROJECT=$1
   local CONNECTOR_NAME=$2
