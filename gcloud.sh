@@ -613,7 +613,7 @@ function gcloudBucketServiceAccountPermission {
   if [[ ${SERVICE_ACCOUNT_ID} != *"@"* ]]
   then
       warning "gcloudBucketServiceAccountPermission function deprecation: you need to include the @$PROJECT.iam.gserviceaccount.com in your SERVICE_ACCOUNT_ID\n"
-      SERVICE_ACCOUNT_ID = "$SERVICE_ACCOUNT_ID@$PROJECT.iam.gserviceaccount.com"
+      SERVICE_ACCOUNT_ID="$SERVICE_ACCOUNT_ID@$PROJECT.iam.gserviceaccount.com"
   fi
 
   gcloudBucketPermission $PROJECT $BUCKET_NAME "serviceAccount:$SERVICE_ACCOUNT_ID" $PERMISSION
