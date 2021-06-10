@@ -464,6 +464,40 @@ function gcloudPubSubSubscriptionUpsertPush {
   fi
 }
 
+# gcloudPubSubSubscriptionCreatePull $PROJECT $SUBSCRIPTION_NAME $TOPIC_NAME $ARGUMENTS=""
+function gcloudPubSubSubscriptionCreatePull {
+  local PROJECT=$1
+  local SUBSCRIPTION_NAME=$2
+  local TOPIC_NAME=$3
+  local ARGUMENTS=${4:-''}
+
+  message "Checking $SUBSCRIPTION_NAME subscription in $PROJECT: "
+  if [[ $(gcloudPubSubSubscriptionExists $PROJECT $SUBSCRIPTION_NAME) == 0 ]]
+  then
+    warning "MISSING\n"
+    gcloud pubsub subscriptions create $SUBSCRIPTION_NAME --project=$PROJECT --topic=$TOPIC_NAME $ARGUMENTS
+  else
+    success "OK\n"
+  fi
+}
+
+# gcloudPubSubSubscriptionUpsertPull $PROJECT $SUBSCRIPTION_NAME $TOPIC_NAME $ARGUMENTS=""
+function gcloudPubSubSubscriptionUpsertPull {
+  local PROJECT=$1
+  local SUBSCRIPTION_NAME=$2
+  local TOPIC_NAME=$3
+  local ARGUMENTS=${4:-''}
+
+  message "Checking $SUBSCRIPTION_NAME subscription in $PROJECT: "
+  if [[ $(gcloudPubSubSubscriptionExists $PROJECT $SUBSCRIPTION_NAME) == 0 ]]
+  then
+    warning "UPDATE\n"
+    gcloudPubSubSubscriptionCreatePull $PROJECT $SUBSCRIPTION_NAME $TOPIC_NAME "$ARGUMENTS"
+  else
+    gcloud pubsub subscriptions update $SUBSCRIPTION_NAME --project=$PROJECT $ARGUMENTS
+  fi
+}
+
 # gcloudPubSubSubscriptionExists $PROJECT $SUBSCRIPTION_NAME
 function gcloudPubSubSubscriptionExists {
   local PROJECT=$1
