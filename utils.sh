@@ -3,7 +3,7 @@
 function generateHash {
   local LENGTH=${1:-15}
 
-  openssl rand -base64 $LENGTH
+  cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-$LENGTH} | head -n 1
 }
 
 function addDomainToEtcHosts {
