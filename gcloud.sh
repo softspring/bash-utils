@@ -511,6 +511,14 @@ function gcloudPubSubSubscriptionExists {
   fi
 }
 
+# gcloudPubSubSubscriptionPurge $PROJECT $SUBSCRIPTION_NAME
+function gcloudPubSubSubscriptionPurge {
+  local PROJECT=$1
+  local SUBSCRIPTION_NAME=$2
+
+  gcloud pubsub subscriptions seek $SUBSCRIPTION_NAME --time="`date --date='tomorrow' '+%Y/%m/%dT%H:%M:%S'`" --project=$PROJECT
+}
+
 # ######################################################################
 # CLOUD TASKS
 
@@ -572,6 +580,15 @@ function gcloudTasksQueueExists {
   else
     echo 0
   fi
+}
+
+# gcloudTasksQueuePurge $PROJECT $QUEUE_NAME
+function gcloudTasksQueuePurge {
+  local PROJECT=$1
+  local QUEUE_NAME=$2
+
+  message "Purge $QUEUE_NAME queue in $PROJECT: "
+  gcloud tasks queues purge $QUEUE_NAME --project=$PROJECT --quiet
 }
 
 # ######################################################################
