@@ -512,6 +512,69 @@ function gcloudPubSubSubscriptionExists {
 }
 
 # ######################################################################
+# CLOUD TASKS
+
+# gcloudTasksQueueCreate $PROJECT $QUEUE_NAME $ARGUMENTS
+function gcloudTasksQueueCreate {
+  local PROJECT=$1
+  local QUEUE_NAME=$2
+  local ARGUMENTS=${3:-''}
+
+  message "Checking $QUEUE_NAME queue in $PROJECT: "
+  if [[ $(gcloudTasksQueueExists $PROJECT $QUEUE_NAME) == 0 ]]
+  then
+    warning "MISSING\n"
+    gcloud tasks queues create $QUEUE_NAME --project=$PROJECT $ARGUMENTS
+  else
+    success "OK\n"
+  fi
+}
+
+# gcloudTasksQueueUpdate $PROJECT $QUEUE_NAME $ARGUMENTS
+function gcloudTasksQueueUpdate {
+  local PROJECT=$1
+  local QUEUE_NAME=$2
+  local ARGUMENTS=${3:-''}
+
+  message "Checking $QUEUE_NAME queue in $PROJECT: "
+  if [[ $(gcloudTasksQueueExists $PROJECT $QUEUE_NAME) == 0 ]]
+  then
+    warning "MISSING\n"
+  else
+    gcloud tasks queues update $QUEUE_NAME --project=$PROJECT $ARGUMENTS
+    success "OK\n"
+  fi
+}
+
+# gcloudTasksQueueUpsert $PROJECT $QUEUE_NAME $ARGUMENTS
+function gcloudTasksQueueUpsert {
+  local PROJECT=$1
+  local QUEUE_NAME=$2
+  local ARGUMENTS=${3:-''}
+
+  message "Checking $QUEUE_NAME queue in $PROJECT: "
+  if [[ $(gcloudTasksQueueExists $PROJECT $QUEUE_NAME) == 0 ]]
+  then
+    gcloudTasksQueueCreate $PROJECT $QUEUE_NAME "$ARGUMENTS"
+  else
+    gcloudTasksQueueUpdate $PROJECT $QUEUE_NAME "$ARGUMENTS"
+  fi
+}
+
+# gcloudTasksQueueExists $PROJECT $QUEUE_NAME
+function gcloudTasksQueueExists {
+  local PROJECT=$1
+  local QUEUE_NAME=$2
+
+  if [ $(gcloud tasks queues list --format "value(name)" --filter "name:$QUEUE_NAME" --project=$PROJECT | wc -l) -eq 1 ]
+  then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
+# ######################################################################
 # CLOUD RUN
 
 # gcloudRunServiceGetUrl $PROJECT $SERVICE_NAME
