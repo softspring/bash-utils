@@ -40,7 +40,7 @@ function createFileChecksum {
 
   if [ ! -z $SAVE_VARIABLE_TO_FILE ]
   then
-    saveEnvVariable .project $CHECKSUM_VARIABLE_NAME "${!CHECKSUM_VARIABLE_NAME}"
+    saveEnvVariable $SAVE_VARIABLE_TO_FILE $CHECKSUM_VARIABLE_NAME "${!CHECKSUM_VARIABLE_NAME}"
   fi
 }
 
