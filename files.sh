@@ -62,23 +62,24 @@ function createFileFromDistWithChecksum {
   local FILE_PATH=$1
   local CHECKSUM_VARIABLE_NAME=$2
   local SAVE_VARIABLE_TO_FILE=$3
+  local DIST_FILE_PATH="${4:-$FILE_PATH.dist}"
 
   message "Checking $FILE_PATH file: "
   if [[ ! -f $FILE_PATH ]]
   then
       warning "MISSING\n"
       echo "Create $FILE_PATH file from dist"
-      cp $FILE_PATH.dist $FILE_PATH
-  elif [[ $(checksumValid "$FILE_PATH.dist" $CHECKSUM_VARIABLE_NAME) == 0 ]]
+      cp $DIST_FILE_PATH $FILE_PATH
+  elif [[ $(checksumValid "$DIST_FILE_PATH" $CHECKSUM_VARIABLE_NAME) == 0 ]]
   then
     warning "HAS CHANGED\n"
     message "Recreate $FILE_PATH file from dist\n"
-    cp $FILE_PATH.dist $FILE_PATH
+    cp $DIST_FILE_PATH $FILE_PATH
   else
     success "OK\n"
   fi
 
-  createFileChecksum "$FILE_PATH.dist" $CHECKSUM_VARIABLE_NAME $SAVE_VARIABLE_TO_FILE
+  createFileChecksum "$DIST_FILE_PATH" $CHECKSUM_VARIABLE_NAME $SAVE_VARIABLE_TO_FILE
 }
 
 function comment() {
