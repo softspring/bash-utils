@@ -73,6 +73,78 @@ function gcloudAppEngineSetAllTraffic {
   gcloud app services set-traffic $SERVICE --splits $VERSION_NAME=1 --quiet --project=$PROJECT
 }
 
+# gcloudAppEngineConfigureAppYamlScaling app.yaml "ADMIN_"
+function gcloudAppEngineConfigureAppYamlScaling {
+    FILE=${1:-app.yaml}
+    PREFIX=${2:-''}
+
+    SCALING=$(getDynamicVariableValue "$PREFIX" "SCALING")
+
+    if [ $SCALING == "automatic" ]; then
+
+        GAE_TARGET_CPU_UTILIZACION=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_TARGET_CPU_UTILIZACION" "0.6")
+        GAE_TARGET_THROUGHPUT_UTILIZATION=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_TARGET_THROUGHPUT_UTILIZATION" "0.6")
+        GAE_MAX_INSTANCES=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_MAX_INSTANCES" "10")
+        GAE_MIN_INSTANCES=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_MIN_INSTANCES" "0")
+        GAE_MAX_CONCURRENT_REQUESTS=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_MAX_CONCURRENT_REQUESTS" "10")
+        GAE_MIN_IDLE_INSTANCES=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_MIN_IDLE_INSTANCES" "0")
+        GAE_MAX_IDLE_INSTANCES=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_MAX_IDLE_INSTANCES" "automatic")
+        GAE_MIN_PENDING_LATENCY=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_MIN_PENDING_LATENCY" "30ms")
+        GAE_MAX_PENDING_LATENCY=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_MAX_PENDING_LATENCY" "30ms")
+
+        echo "" >> $FILE
+        echo "automatic_scaling:" >> $FILE
+        echo "  target_cpu_utilization: $GAE_TARGET_CPU_UTILIZACION" >> $FILE
+        echo "  target_throughput_utilization: $GAE_TARGET_THROUGHPUT_UTILIZATION" >> $FILE
+        echo "  max_instances: $GAE_MAX_INSTANCES" >> $FILE
+        echo "  min_instances: $GAE_MIN_INSTANCES" >> $FILE
+        echo "  max_concurrent_requests: $GAE_MAX_CONCURRENT_REQUESTS" >> $FILE
+        echo "  min_idle_instances: $GAE_MIN_IDLE_INSTANCES" >> $FILE
+        echo "  max_idle_instances: $GAE_MAX_IDLE_INSTANCES" >> $FILE
+        echo "  min_pending_latency: $GAE_MIN_PENDING_LATENCY" >> $FILE
+        echo "  max_pending_latency: $GAE_MAX_PENDING_LATENCY" >> $FILE
+
+    elif [ $SCALING == "manual" ]; then
+
+        GAE_INSTANCES=$(getDynamicVariableValue "$PREFIX" "SCALING_MANUAL_INSTANCES" "1")
+
+        echo "" >> $FILE
+        echo "manual_scaling:" >> $FILE
+        echo "  instances: $GAE_INSTANCES" >> $FILE
+
+    elif [ $SCALING == "basic" ]; then
+
+        GAE_MAX_INSTANCES=$(getDynamicVariableValue "$PREFIX" "SCALING_BASIC_MAX_INSTANCES" "1")
+        GAE_IDLE_TIMEOUT=$(getDynamicVariableValue "$PREFIX" "SCALING_BASIC_IDLE_TIMEOUT" "5m")
+
+        echo "" >> $FILE
+        echo "basic_scaling:" >> $FILE
+        echo "  max_instances: $GAE_MAX_INSTANCES" >> $FILE
+        echo "  idle_timeout: $GAE_IDLE_TIMEOUT" >> $FILE
+
+    else
+
+        echo "Invalid scaling $SCALING (valid values: automatic, basic, manual)"
+        exit 1
+
+    fi;
+}
+
+# gcloudAppEngineConfigureAppYamlVpcConnector $PROJECT $REGION $VPC_CONNECTOR app.yaml "ADMIN_"
+function gcloudAppEngineConfigureAppYamlVpcConnector {
+    GCLOUD_PROJECT=${1:-''}
+    GCLOUD_REGION=${2:-''}
+    VPC_CONNECTOR=${3:-''}
+    FILE=${4:-app.yaml}
+    PREFIX=${5:-''}
+
+    if [ $VPC_CONNECTOR ]; then
+      echo "" >> $FILE
+      echo "vpc_access_connector:" >> $FILE
+      echo "  name: 'projects/$GCLOUD_PROJECT/locations/$GCLOUD_REGION/connectors/$VPC_CONNECTOR'" >> $FILE
+    fi
+}
+
 # ######################################################################
 # CLOUD SQL
 

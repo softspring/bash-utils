@@ -42,3 +42,18 @@ function removeEnvVariable {
 
   loadEnvFile $ENV_FILE 1
 }
+
+function getDynamicVariableValue {
+    PREFIX=$1
+    NAME=$2
+    DEFAULT=$3
+
+    local VAR_NAME="$PREFIX$NAME"
+    local VAR_VALUE="${!VAR_NAME}"
+
+    if [ $VAR_VALUE ]; then
+        echo "${!VAR_NAME}"
+    else
+        echo "$DEFAULT"
+    fi
+}
