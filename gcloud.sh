@@ -588,7 +588,16 @@ function gcloudPubSubSubscriptionPurge {
   local PROJECT=$1
   local SUBSCRIPTION_NAME=$2
 
-  gcloud pubsub subscriptions seek $SUBSCRIPTION_NAME --time="`date --date='tomorrow' '+%Y/%m/%dT%H:%M:%S'`" --project=$PROJECT
+  local TOMORROW
+
+  if [[ $(isMac) == 1 ]]
+  then
+    TOMORROW=`date -v+1d '+%Y/%m/%dT%H:%M:%S'`
+  else
+    TOMORROW=`date --date='tomorrow' '+%Y/%m/%dT%H:%M:%S'`
+  fi
+
+  gcloud pubsub subscriptions seek $SUBSCRIPTION_NAME --time="$TOMORROW" --project=$PROJECT
 }
 
 # ######################################################################

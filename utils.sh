@@ -23,3 +23,32 @@ function addDomainToEtcHosts {
     success "OK\n"
   fi
 }
+
+function osType {
+  case "$OSTYPE" in
+    solaris*) echo "SOLARIS" ;;
+    darwin*)  echo "OSX" ;;
+    linux*)   echo "LINUX" ;;
+    bsd*)     echo "BSD" ;;
+    msys*)    echo "WINDOWS" ;;
+    *)        echo "unknown: $OSTYPE" ;;
+  esac
+}
+
+function isMac {
+  if [[ $(osType) == 'OSX' ]]
+  then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
+function isLinux {
+  if [[ $(osType) == 'LINUX' ]]
+  then
+    echo 1
+  else
+    echo 0
+  fi
+}
