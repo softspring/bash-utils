@@ -76,5 +76,5 @@ function replaceEnvVariables {
 
   envsubst < $FILE > $FILE.tmp
   mv $FILE.tmp $FILE
-  message "Replaced environment variables in $FILE"
+  message "Replaced environment variables in $FILE\n"
 }
