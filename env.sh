@@ -61,6 +61,19 @@ function getDynamicVariableValue {
 # replaceEnvVariables $FILE
 function replaceEnvVariables {
   local FILE=$1
+
+  if ! command -v envsubst &> /dev/null
+  then
+      warning "envsubst could not be found, trying to install\n"
+      apt-get install gettext-base || true
+      apk add gettext || true
+  fi
+
+  if ! command -v envsubst &> /dev/null
+  then
+      die "Can not install envsubst\n"
+  fi
+
   envsubst < $FILE > $FILE.tmp
   mv $FILE.tmp $FILE
   message "Replaced environment variables in $FILE"
