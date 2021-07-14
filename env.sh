@@ -65,7 +65,7 @@ function replaceEnvVariables {
   if ! command -v envsubst &> /dev/null
   then
       warning "envsubst could not be found, trying to install\n"
-      apt-get install gettext-base || true
+      apt-get update -y && apt-get install -y gettext-base || true
       apk add gettext || true
   fi
 
