@@ -59,7 +59,7 @@ function gcloudAppEngineDeployApp {
 function gcloudAppEngineDeployCron {
   local PROJECT=$1
   local FILE=${2:-cron.yaml}
-  local ARGUMENTS=${3:-""}
+  local ARGUMENTS=${3:-"--quiet"}
 
   gcloud app deploy $FILE $ARGUMENTS --project=$GCLOUD_PROJECT
 }
