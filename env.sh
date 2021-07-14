@@ -57,3 +57,11 @@ function getDynamicVariableValue {
         echo "$DEFAULT"
     fi
 }
+
+# replaceEnvVariables $FILE
+function replaceEnvVariables {
+  local FILE=$1
+  envsubst < $FILE > $FILE.tmp
+  mv $FILE.tmp $FILE
+  message "Replaced environment variables in $FILE"
+}
