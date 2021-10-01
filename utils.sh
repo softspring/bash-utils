@@ -52,3 +52,14 @@ function isLinux {
     echo 0
   fi
 }
+
+function openBrowser {
+  local URL=$1
+
+  if [[ $(isLinux) == 1 ]]
+  then
+    xdg-open $URL
+  else
+    open $URL
+  fi
+}
