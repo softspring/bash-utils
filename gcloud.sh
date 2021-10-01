@@ -1,6 +1,17 @@
 #!/bin/bash -e
 
 # ######################################################################
+# ACCOUNTS
+
+# gcloudSelectAccount $ACCOUNT
+function gcloudSelectAccount {
+  local ACCOUNT=$1
+
+  gcloud config set account $ACCOUNT
+  message "Selected $ACCOUNT gcloud account"
+}
+
+# ######################################################################
 # PROJECTS
 
 # gcloudProjectCreate $PROJECT $PROJECT_NAME="$PROJECT" $ORGANIZATION_ID=""

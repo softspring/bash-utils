@@ -53,3 +53,53 @@ function promptGcloudProject {
     success "OK\n"
   fi
 }
+
+function promptGcloudAccount {
+  # is not local, it's global to return value
+  GCLOUD_ACCOUNT=$1
+
+  message "Checking GCLOUD_ACCOUNT account: "
+  if [[ -z $GCLOUD_ACCOUNT ]]
+  then
+    warning "MISSING\n"
+
+    AUTHENTICATED_ACCOUNT=$(gcloud config list account --format 'value(core.account)')
+    ACCOUNTS_LIST=( $(gcloud auth list  --format "value(account)") )
+    ACCOUNTS_LIST_COUNT=${#ACCOUNTS_LIST[@]}
+
+    until [[ $GCLOUD_ACCOUNT ]]
+    do
+      echo "Select one account:"
+      ACCOUNT_INDEX=1
+      for ACCOUNT_NAME in "${ACCOUNTS_LIST[@]}"
+      do
+          if [[ $AUTHENTICATED_ACCOUNT == $ACCOUNT_NAME ]]
+          then
+              echo "  $ACCOUNT_INDEX: $ACCOUNT_NAME (default)"
+          else
+              echo "  $ACCOUNT_INDEX: $ACCOUNT_NAME"
+          fi
+
+          ACCOUNT_INDEX=$(expr $ACCOUNT_INDEX + 1)
+      done
+
+      read -p 'GCLOUD_ACCOUNT: ' GCLOUD_ACCOUNT_NUMER
+
+      if [[ -z $GCLOUD_ACCOUNT_NUMER ]]
+      then
+          echo "Selected $AUTHENTICATED_ACCOUNT"
+          GCLOUD_ACCOUNT=$AUTHENTICATED_ACCOUNT
+      else
+          if [[ $GCLOUD_ACCOUNT_NUMER > $ACCOUNTS_LIST_COUNT || $GCLOUD_ACCOUNT_NUMER < 1 ]]
+          then
+              echo "Invalid selection $GCLOUD_ACCOUNT_NUMER"
+          else
+              GCLOUD_ACCOUNT=${ACCOUNTS_LIST[$(expr $GCLOUD_ACCOUNT_NUMER - 1)]}
+              echo "Selected $GCLOUD_ACCOUNT"
+          fi
+      fi
+    done
+  else
+    success "OK\n"
+  fi
+}
