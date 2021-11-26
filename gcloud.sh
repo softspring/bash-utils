@@ -14,6 +14,14 @@ function gcloudSelectAccount {
 # ######################################################################
 # PROJECTS
 
+# gcloudSelectProject $PROJECT
+function gcloudSelectProject {
+  local PROJECT=$1
+
+  gcloud config set project $PROJECT
+  message "Selected $PROJECT gcloud project"
+}
+
 # gcloudProjectCreate $PROJECT $PROJECT_NAME="$PROJECT" $ORGANIZATION_ID=""
 function gcloudProjectCreate {
   local PROJECT=$1
