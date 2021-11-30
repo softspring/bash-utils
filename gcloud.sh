@@ -99,7 +99,7 @@ function gcloudAppEngineConfigureAppYamlScaling {
 
     SCALING=$(getDynamicVariableValue "$PREFIX" "SCALING")
 
-    if [ $SCALING == "automatic" ]; then
+    if [[ $SCALING = "automatic" ]]; then
 
         GAE_TARGET_CPU_UTILIZACION=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_TARGET_CPU_UTILIZACION" "0.6")
         GAE_TARGET_THROUGHPUT_UTILIZATION=$(getDynamicVariableValue "$PREFIX" "SCALING_AUTOMATIC_TARGET_THROUGHPUT_UTILIZATION" "0.6")
@@ -123,7 +123,7 @@ function gcloudAppEngineConfigureAppYamlScaling {
         echo "  min_pending_latency: $GAE_MIN_PENDING_LATENCY" >> $FILE
         echo "  max_pending_latency: $GAE_MAX_PENDING_LATENCY" >> $FILE
 
-    elif [ $SCALING == "manual" ]; then
+    elif [[ $SCALING = "manual" ]]; then
 
         GAE_INSTANCES=$(getDynamicVariableValue "$PREFIX" "SCALING_MANUAL_INSTANCES" "1")
 
@@ -131,7 +131,7 @@ function gcloudAppEngineConfigureAppYamlScaling {
         echo "manual_scaling:" >> $FILE
         echo "  instances: $GAE_INSTANCES" >> $FILE
 
-    elif [ $SCALING == "basic" ]; then
+    elif [[ $SCALING = "basic" ]]; then
 
         GAE_MAX_INSTANCES=$(getDynamicVariableValue "$PREFIX" "SCALING_BASIC_MAX_INSTANCES" "1")
         GAE_IDLE_TIMEOUT=$(getDynamicVariableValue "$PREFIX" "SCALING_BASIC_IDLE_TIMEOUT" "5m")
