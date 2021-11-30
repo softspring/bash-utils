@@ -92,6 +92,16 @@ function gcloudAppEngineSetAllTraffic {
   gcloud app services set-traffic $SERVICE --splits $VERSION_NAME=1 --quiet --project=$PROJECT
 }
 
+# gcloudAppEngineRemoveStoppedVersions $PROJECT $SERVICE="default"
+function gcloudAppEngineRemoveStoppedVersions {
+  local PROJECT=$1
+  local SERVICE=${2:-default}
+
+    for VERSION in `gcloud app versions list --filter="traffic_split=0" --format="table[no-heading](version.id)" -s $SERVICE --project $PROJECT`; do
+        gcloud app versions delete $VERSION -s $SERVICE --quiet --project $PROJECT
+    done
+}
+
 # gcloudAppEngineConfigureAppYamlScaling app.yaml "ADMIN_"
 function gcloudAppEngineConfigureAppYamlScaling {
     FILE=${1:-app.yaml}
