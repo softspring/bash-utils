@@ -48,6 +48,12 @@ function gcloudProjectCreate {
   fi
 }
 
+# gcloudProjectGetNumber $PROJECT
+function gcloudProjectGetNumber {
+  local PROJECT=$1
+  gcloud projects list --filter="$PROJECT" --format="value(PROJECT_NUMBER)"
+}
+
 # ######################################################################
 # APPENGINE
 
