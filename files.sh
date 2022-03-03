@@ -46,7 +46,7 @@ function createFileChecksum {
 
 function createFileFromDist {
   local FILE_PATH=$1
-  local DIST_FILE_PATH="${4:-$FILE_PATH.dist}"
+  local DIST_FILE_PATH="${2:-$FILE_PATH.dist}"
 
   message "Checking $FILE_PATH file: "
   if [[ ! -f $FILE_PATH ]]
