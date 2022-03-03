@@ -46,13 +46,14 @@ function createFileChecksum {
 
 function createFileFromDist {
   local FILE_PATH=$1
+  local DIST_FILE_PATH="${4:-$FILE_PATH.dist}"
 
   message "Checking $FILE_PATH file: "
   if [[ ! -f $FILE_PATH ]]
   then
       warning "MISSING\n"
       echo "Create $FILE_PATH file from dist"
-      cp $FILE_PATH.dist $FILE_PATH
+      cp $DIST_FILE_PATH $FILE_PATH
   else
     success "OK\n"
   fi
