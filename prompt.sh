@@ -80,7 +80,7 @@ function promptGcloudAccount {
               echo "  $ACCOUNT_INDEX: $ACCOUNT_NAME"
           fi
 
-          ACCOUNT_INDEX=$(expr $ACCOUNT_INDEX + 1)
+          ACCOUNT_INDEX=$((ACCOUNT_INDEX+1))
       done
 
       read -p 'GCLOUD_ACCOUNT: ' GCLOUD_ACCOUNT_NUMER
@@ -94,7 +94,7 @@ function promptGcloudAccount {
           then
               echo "Invalid selection $GCLOUD_ACCOUNT_NUMER"
           else
-              GCLOUD_ACCOUNT=${ACCOUNTS_LIST[$(expr $GCLOUD_ACCOUNT_NUMER - 1)]}
+              GCLOUD_ACCOUNT=${ACCOUNTS_LIST[$((GCLOUD_ACCOUNT_NUMER-1))]}
               echo "Selected $GCLOUD_ACCOUNT"
           fi
       fi
