@@ -63,3 +63,18 @@ function openBrowser {
     open $URL
   fi
 }
+
+function dieIfNotMinimumVersion {
+  local COMMAND_NAME=$1
+  local REQUIRED_VERSION=$2
+  local CURRENT_VERSION=${3:-$($COMMAND_NAME --version)}
+
+  message "Checking $COMMAND_NAME version "
+
+  CHECK_GT_REQUIRED_VERSION=$(printf '%s\n%s' "$REQUIRED_VERSION" "$CURRENT_VERSION" | sort -V -C && echo 1 || echo 0)
+  if [[ $CHECK_GT_REQUIRED_VERSION == 1 ]]; then
+    success "$CURRENT_VERSION\n"
+  else
+    die "$CURRENT_VERSION (required version >= $REQUIRED_VERSION)\n"
+  fi
+}
