@@ -102,7 +102,7 @@ function text {
 PREFIX=''
 
 function block {
-  message "\n***********************************************************\n" "default" "bold"
+  message "\n\n***********************************************************\n" "default" "bold"
   message " $1\n" "default" "bold"
   message "***********************************************************\n" "default" "bold"
   PREFIX='    '
