@@ -165,18 +165,21 @@ function gcloudAppEngineConfigureAppYamlScaling {
     fi;
 }
 
-# gcloudAppEngineConfigureAppYamlVpcConnector $PROJECT $REGION $VPC_CONNECTOR app.yaml "ADMIN_"
+# gcloudAppEngineConfigureAppYamlVpcConnector $PROJECT $REGION $VPC_CONNECTOR app.yaml "ADMIN_" "all-traffic"
 function gcloudAppEngineConfigureAppYamlVpcConnector {
     GCLOUD_PROJECT=${1:-''}
     GCLOUD_REGION=${2:-''}
     VPC_CONNECTOR=${3:-''}
     FILE=${4:-app.yaml}
     PREFIX=${5:-''}
+    # EGRESS_SETTING can be private-ranges-only or all-traffic
+    EGRESS_SETTING=${6:-'private-ranges-only'}
 
     if [ $VPC_CONNECTOR ]; then
       echo "" >> $FILE
       echo "vpc_access_connector:" >> $FILE
       echo "  name: 'projects/$GCLOUD_PROJECT/locations/$GCLOUD_REGION/connectors/$VPC_CONNECTOR'" >> $FILE
+      echo "  egress_setting: $EGRESS_SETTING" >> $FILE
     fi
 }
 
