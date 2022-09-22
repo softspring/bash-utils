@@ -7,6 +7,8 @@ source "$UTILS_TMP_PATH/prompt.sh"
 source "$UTILS_TMP_PATH/text.sh"
 source "$UTILS_TMP_PATH/utils.sh"
 
+message "Bash-utils ${ANSI_GREEN}$BASH_UTILS_VERSION${ANSI_END} in a $(osType) system"
+
 function _show_help_files_in_dir {
   local LOAD_BASE_PATH="$1"
   local PARENT_SCRIPT="$2"
