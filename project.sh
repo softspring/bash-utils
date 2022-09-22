@@ -1,3 +1,11 @@
+#!/bin/bash -e
+
+source "$UTILS_TMP_PATH/env.sh"
+source "$UTILS_TMP_PATH/files.sh"
+source "$UTILS_TMP_PATH/gcloud.sh"
+source "$UTILS_TMP_PATH/prompt.sh"
+source "$UTILS_TMP_PATH/text.sh"
+source "$UTILS_TMP_PATH/utils.sh"
 
 function _show_help_files_in_dir {
   local LOAD_BASE_PATH="$1"

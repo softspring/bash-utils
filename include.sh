@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+## THIS FILE IS DEPRECATED
+
 if [[ -z $UTILS_TMP_PATH ]]
 then
   echo "Bash utils include tool"
