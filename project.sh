@@ -14,6 +14,10 @@ function _show_help_files_in_dir {
   local PARENT_SCRIPT="$2"
 
   for SCRIPT in "$LOAD_BASE_PATH"/*; do
+        # shellcheck disable=SC2034
+        # do not keep other commands documentation
+        COMMAND_HELP_DESCRIPTION=
+
         # SCRIPT_BASE_NAME=$(basename -- "$SCRIPT")
         SCRIPT_ID=$(basename -- "$SCRIPT" ".sh")
 
@@ -41,6 +45,9 @@ function show_help {
   _show_help_files_in_dir "$LOAD_BASE_PATH" ""
 
   for SCRIPT in "$LOAD_BASE_PATH"/*; do
+      # do not keep other commands documentation
+      COMMAND_HELP_TITLE=
+
       # SCRIPT_BASE_NAME=$(basename -- "$SCRIPT")
       SCRIPT_ID=$(basename -- "$SCRIPT" ".sh")
 
@@ -142,7 +149,7 @@ if [[ -f "$SCRIPTS_DIR/$1.sh" ]]
 then
   # shellcheck disable=SC1090
   source "$SCRIPTS_DIR/$1.sh"
-  run "${@:2}"
+  eval run_${1} "${@:2}"
   exit
 fi
 
@@ -150,7 +157,7 @@ if [[ -d "$SCRIPTS_DIR/$1" && -f "$SCRIPTS_DIR/$1/$2.sh" ]]
 then
   # shellcheck disable=SC1090
   source "$SCRIPTS_DIR/$1/$2.sh"
-  run "${@:3}"
+  eval run_${1}_${2} "${@:3}"
   exit
 fi
 
