@@ -16,7 +16,9 @@ SCRIPTS_DIR="$BASE_DIR/scripts"
 VAR_DIR="$BASE_DIR/var"
 UTILS_TMP_PATH=$VAR_DIR/bash-utils ; mkdir -p "$UTILS_TMP_PATH"
 BASH_UTILS_VERSION=$(curl -H "Authorization: token $GITHUB_ACCESS_TOKEN" -s https://api.github.com/repos/softspring/bash-utils/releases | grep 'tag_name' | head -n1 | grep -Eo '[^\"]*' | tail -n2 | head -n1)
-wget -q -O - "https://api.github.com/repos/softspring/bash-utils/tarball/refs/tags/$BASH_UTILS_VERSION" | tar -xz --strip-components=1 -C "$UTILS_TMP_PATH"
+CURRENT_VERSION=$(cat "$UTILS_TMP_PATH/.version" 2> /dev/null || echo '')
+[ "$CURRENT_VERSION" != "$BASH_UTILS_VERSION" ] || wget -q -O - "https://api.github.com/repos/softspring/bash-utils/tarball/refs/tags/$BASH_UTILS_VERSION" | tar -xz --strip-components=1 -C "$UTILS_TMP_PATH"
+echo "$BASH_UTILS_VERSION" > "$UTILS_TMP_PATH/.version"
 source "$UTILS_TMP_PATH/project.sh"
 ```
 
