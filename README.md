@@ -10,12 +10,13 @@ Create a project file in the project root.
 # SEE https://github.com/softspring/bash-utils
 # #################################################################################
 # shellcheck disable=SC2034
+GITHUB_ACCESS_TOKEN="<your-github-token>"
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && realpath "$(pwd)" )"
 SCRIPTS_DIR="$BASE_DIR/scripts"
 VAR_DIR="$BASE_DIR/var"
 UTILS_TMP_PATH=$VAR_DIR/bash-utils ; mkdir -p "$UTILS_TMP_PATH"
-curl -s https://api.github.com/repos/softspring/bash-utils/tags | grep 'tarball_url' | grep -Eo 'https://[^\"]*' | sed -n '1p' | xargs wget -q -O - | tar -xz --strip-components=1 -C $UTILS_TMP_PATH
-BASH_UTILS_VERSION=$(curl -s https://api.github.com/repos/softspring/bash-utils/tags | grep 'name' | grep -Eo '[^\"]*' | tail -n2 | head -n1)
+BASH_UTILS_VERSION=$(curl -H "Authorization: token $GITHUB_ACCESS_TOKEN" -s https://api.github.com/repos/softspring/bash-utils/releases | grep 'tag_name' | head -n1 | grep -Eo '[^\"]*' | tail -n2 | head -n1)
+wget -q -O - "https://api.github.com/repos/softspring/bash-utils/tarball/refs/tags/$BASH_UTILS_VERSION" | tar -xz --strip-components=1 -C "$UTILS_TMP_PATH"
 source "$UTILS_TMP_PATH/project.sh"
 ```
 
