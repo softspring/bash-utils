@@ -14,9 +14,8 @@ BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && realpath "$(pwd)" )"
 SCRIPTS_DIR="$BASE_DIR/scripts"
 VAR_DIR="$BASE_DIR/var"
 UTILS_TMP_PATH=$VAR_DIR/bash-utils ; mkdir -p "$UTILS_TMP_PATH"
-curl -H "Authorization: token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" -s https://raw.githubusercontent.com/softspring/bash-utils/main/include.sh -o "$UTILS_TMP_PATH/include.sh"
-curl -H "Authorization: token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" -s https://raw.githubusercontent.com/softspring/bash-utils/main/include.sh -o "$UTILS_TMP_PATH/project.sh"
-source "$UTILS_TMP_PATH/include.sh" all
+curl -s https://api.github.com/repos/softspring/bash-utils/tags | grep 'tarball_url' | grep -Eo 'https://[^\"]*' | sed -n '1p' | xargs wget -q -O - | tar -xz --strip-components=1 -C $UTILS_TMP_PATH
+BASH_UTILS_VERSION=$(curl -s https://api.github.com/repos/softspring/bash-utils/tags | grep 'name' | grep -Eo '[^\"]*' | tail -n2 | head -n1)
 source "$UTILS_TMP_PATH/project.sh"
 ```
 
