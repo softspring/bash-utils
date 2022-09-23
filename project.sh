@@ -9,6 +9,8 @@ source "$UTILS_TMP_PATH/utils.sh"
 
 message "Bash-utils ${ANSI_GREEN}$BASH_UTILS_VERSION${ANSI_END} in a $(osType) system\n"
 
+HELP_SPACES_PAD=40
+
 function _show_help_files_in_dir {
   local LOAD_BASE_PATH="$1"
   local PARENT_SCRIPT="$2"
@@ -30,7 +32,8 @@ function _show_help_files_in_dir {
         # shellcheck disable=SC1090
         source "$SCRIPT"
 
-        message "  $PARENT_SCRIPT$SCRIPT_ID               " "success" ; message "$COMMAND_HELP_DESCRIPTION\n"
+        message_pad "  $PARENT_SCRIPT$SCRIPT_ID" "$HELP_SPACES_PAD" "success"
+        message "$COMMAND_HELP_DESCRIPTION\n"
     done
 }
 
@@ -40,7 +43,8 @@ function show_help {
   message "\nUsage:\n" "warning"
   message "\n  command [arguments]\n"
   message "\nAvailable commands:\n\n" "warning"
-  message "  help                          " "success" ; message "Shows this info\n"
+  message_pad "  help" "$HELP_SPACES_PAD" "success"
+  message "Shows this info\n"
 
   _show_help_files_in_dir "$LOAD_BASE_PATH" ""
 

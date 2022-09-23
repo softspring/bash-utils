@@ -108,6 +108,30 @@ function message {
   printf $(message_make "$COLOR" "$STYLE") "$MESSAGE"
 }
 
+# str_pad(
+  #    string $string,
+  #    int $length,
+  #    string $pad_string = " ",
+  #    int $pad_type = STR_PAD_RIGHT
+  #): string
+function message_pad {
+  local MESSAGE=$1
+  local PAD=$2
+  local COLOR=$2
+  local STYLE=$3
+  local PAD_CHAR=${4-" "}
+  local PAD_TYPE=${5-"right"}
+
+  [ "$PAD_TYPE" == 'right' ] && message "$MESSAGE" "$COLOR" "$STYLE"
+
+  # shellcheck disable=SC2034
+  for i in $(seq ${#MESSAGE} "$PAD"); do
+     message "$PAD_CHAR"
+  done
+
+  [ "$PAD_TYPE" == 'left' ] && message "$MESSAGE" "$COLOR" "$STYLE"
+}
+
 function text {
   message "$PREFIX$1" $2
 }
