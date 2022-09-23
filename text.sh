@@ -117,10 +117,10 @@ function message {
 function message_pad {
   local MESSAGE=$1
   local PAD=$2
-  local COLOR=$2
-  local STYLE=$3
-  local PAD_CHAR=${4-" "}
-  local PAD_TYPE=${5-"right"}
+  local COLOR=$3
+  local STYLE=$4
+  local PAD_CHAR=${5-" "}
+  local PAD_TYPE=${6-"right"}
 
   [ "$PAD_TYPE" == 'right' ] && message "$MESSAGE" "$COLOR" "$STYLE"
 
