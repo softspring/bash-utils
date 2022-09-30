@@ -45,11 +45,18 @@ COMMAND_HELP_TEXT="
 
   Additional usage explanations
 "
-#COMMAND_ARGUMENTS=0
 
 [ -z "${UTILS_TMP_PATH}" ] && echo "Run $COMMAND_NAME command with project script:" && echo "$ $COMMAND_HELP_USAGE" && exit 1
 
 function run {
+  # GET ALL ARGUMENTS
+  # shellcheck disable=SC2124
+  local ARGUMENTS="${@:1}"
+  
+  # or SPLIT THEM
+  local VARIABLE1="$1"
+  local VARIABLE2="$2"
+  
   echo "DO RUN COMMAND!!!"
 }
 ```
