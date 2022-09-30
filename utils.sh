@@ -58,9 +58,9 @@ function openBrowser {
 
   if [[ $(isLinux) == 1 ]]
   then
-    xdg-open $URL
+    xdg-open "$URL" 2>/dev/null || true
   else
-    open $URL
+    open "$URL" 2>/dev/null || true
   fi
 }
 
