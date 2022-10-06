@@ -93,6 +93,13 @@ function find_command {
   local SUBCOMMAND="$2"
   local COMMAND_IS_GROUP=0
 
+  # on empty command show help
+  if [[ -z $COMMAND ]]
+  then
+    COMMAND_INDEX=0
+    return
+  fi
+
   for (( _COMMAND_INDEX=0; _COMMAND_INDEX<${#_COMMANDS_GROUPS[@]}; _COMMAND_INDEX++ ))
   do
     if [[ "${_COMMANDS_GROUPS[$_COMMAND_INDEX]}" == "$COMMAND" ]]
