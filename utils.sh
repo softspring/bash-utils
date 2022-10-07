@@ -3,7 +3,8 @@
 function generateHash {
   local LENGTH=${1:-15}
 
-  cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-$LENGTH} | head -n 1
+  # shellcheck disable=SC2002
+  cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w "${1:-$LENGTH}" | head -n 1
 }
 
 function addDomainToEtcHosts {
@@ -11,14 +12,14 @@ function addDomainToEtcHosts {
   local DOMAIN=$1
   local IP=${2:-$IP_DEFAULT}
 
-  DOMAIN_REGEX=$(echo $DOMAIN | sed 's/\./\\./' | sed 's/\-/\\-/')
+  DOMAIN_REGEX=$(echo "$DOMAIN" | sed 's/\./\\./' | sed 's/\-/\\-/')
 
   message "Checking $DOMAIN domain configuration in /etc/hosts: "
-  if ! egrep -q "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+.*\s$DOMAIN_REGEX" /etc/hosts
+  if ! grep -E -q "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+.*\s$DOMAIN_REGEX" /etc/hosts
   then
     warning "MISSING\n"
     message "Add default $DOMAIN domain to /etc/hosts\n"
-    sudo IP=$IP DOMAIN=$DOMAIN sh -c 'echo "$IP $DOMAIN" >> /etc/hosts'
+    sudo IP="$IP" DOMAIN="$DOMAIN" sh -c 'echo "$IP $DOMAIN" >> /etc/hosts'
   else
     success "OK\n"
   fi

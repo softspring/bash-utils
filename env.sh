@@ -4,11 +4,14 @@ function loadEnvFile {
   local ENV_FILE=$1
   local SILENCE=${2:-0}
 
-  if [ $SILENCE -eq 0 ]
+  if [ "$SILENCE" -eq 0 ]
   then
     message "Load env variables from $ENV_FILE\n"
   fi
-  set -a; source $ENV_FILE; set +a
+  set -a;
+  # shellcheck disable=SC1090
+  source "$ENV_FILE";
+  set +a
 }
 
 function saveEnvVariable {
@@ -17,16 +20,16 @@ function saveEnvVariable {
   local VALUE=$3
   local SED_SEPARATOR="${4:-/}"
 
-  if egrep -q "^$PROPERTY=" $ENV_FILE
+  if grep -E -q "^$PROPERTY=" "$ENV_FILE"
   then
-    replaceInFile "^$PROPERTY=.*\\\$" "$PROPERTY=$VALUE" $ENV_FILE $SED_SEPARATOR
+    replaceInFile "^$PROPERTY=.*\\\$" "$PROPERTY=$VALUE" "$ENV_FILE" "$SED_SEPARATOR"
     message "Saved $PROPERTY into $ENV_FILE\n"
   else
-    echo "$PROPERTY=$VALUE" >> $ENV_FILE
+    echo "$PROPERTY=$VALUE" >> "$ENV_FILE"
     message "Saved new $PROPERTY into $ENV_FILE\n"
   fi
 
-  loadEnvFile $ENV_FILE 1
+  loadEnvFile "$ENV_FILE" 1
 }
 
 function removeEnvVariable {
@@ -34,13 +37,13 @@ function removeEnvVariable {
   local PROPERTY=$2
   local SED_SEPARATOR="${4:-/}"
 
-  if egrep -q "^$PROPERTY=" $ENV_FILE
+  if grep -E -q "^$PROPERTY=" "$ENV_FILE"
   then
-    deleteInFile "^$PROPERTY=.*\$" $ENV_FILE $SED_SEPARATOR
+    deleteInFile "^$PROPERTY=.*\$" "$ENV_FILE" "$SED_SEPARATOR"
     message "Removed $PROPERTY from $ENV_FILE\n"
   fi
 
-  loadEnvFile $ENV_FILE 1
+  loadEnvFile "$ENV_FILE" 1
 }
 
 function getDynamicVariableValue {
@@ -51,7 +54,7 @@ function getDynamicVariableValue {
     local VAR_NAME="$PREFIX$NAME"
     local VAR_VALUE="${!VAR_NAME}"
 
-    if [ $VAR_VALUE ]; then
+    if [ "$VAR_VALUE" ]; then
         echo "${!VAR_NAME}"
     else
         echo "$DEFAULT"
@@ -65,6 +68,7 @@ function replaceEnvVariables {
   if ! command -v envsubst &> /dev/null
   then
       warning "envsubst could not be found, trying to install\n"
+      # shellcheck disable=SC2015
       apt-get update -y && apt-get install -y gettext-base || true
       apk add gettext || true
   fi
@@ -74,7 +78,7 @@ function replaceEnvVariables {
       die "Can not install envsubst\n"
   fi
 
-  envsubst < $FILE > $FILE.tmp
-  mv $FILE.tmp $FILE
+  envsubst < "$FILE" > "$FILE.tmp"
+  mv "$FILE.tmp" "$FILE"
   message "Replaced environment variables in $FILE\n"
 }

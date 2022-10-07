@@ -3,6 +3,7 @@
 # http://www.andrewnoske.com/wiki/Bash_-_adding_color
 
 # ansi colors for mac
+# shellcheck disable=SC2034
 CLICOLOR=1
 # colors
 DEFAULT="0"
@@ -24,12 +25,19 @@ ANSI_DEFAULT="\e[0m"
 ANSI_RED="\e[31m"
 ANSI_GREEN="\e[32m"
 ANSI_YELLOW="\e[33m"
+# shellcheck disable=SC2034
 ANSI_BLUE="\e[34m"
+# shellcheck disable=SC2034
 ANSI_PURPLE="\e[35m"
+# shellcheck disable=SC2034
 ANSI_CYAN="\e[36m"
+# shellcheck disable=SC2034
 ANSI_ERROR="$ANSI_RED"
+# shellcheck disable=SC2034
 ANSI_SUCCESS="$ANSI_GREEN"
+# shellcheck disable=SC2034
 ANSI_WARNING="$ANSI_YELLOW"
+# shellcheck disable=SC2034
 ANSI_END="$ANSI_DEFAULT"
 
 function message_make {
@@ -105,6 +113,8 @@ function message {
   local COLOR=$2
   local STYLE=$3
 
+  # shellcheck disable=SC2046
+  # shellcheck disable=SC2059
   printf $(message_make "$COLOR" "$STYLE") "$MESSAGE"
 }
 
@@ -135,7 +145,7 @@ function message_pad {
 }
 
 function text {
-  message "$PREFIX$1" $2
+  message "$PREFIX$1" "$2"
 }
 
 PREFIX=''
@@ -169,7 +179,7 @@ function die {
   local EXIT_CODE=${2:-1}
 
   error "$MESSAGE"
-  exit $EXIT_CODE
+  exit "$EXIT_CODE"
 }
 
 function dieIfEmpty {
@@ -179,18 +189,19 @@ function dieIfEmpty {
 
   if [ ! $VARIABLE ]
   then
-    die "$MESSAGE" $EXIT_CODE
+    die "$MESSAGE" "$EXIT_CODE"
   fi
 }
 
 function runSed {
   local COMMAND=$1
 
-  if [ ! -z $DEBUG_SED ]
+  if [ ! -z "$DEBUG_SED" ]
   then
     echo "sed/gsed $COMMAND"
   fi
 
+  # shellcheck disable=SC2155
   local SYSTEM="$(uname -s)"
   case "${SYSTEM}" in
     Linux*)
@@ -230,21 +241,21 @@ function deleteInFile {
 }
 
 function test_messages {
-  MESSAGE=$(message_make "default") ; message "test " "default" ; echo $MESSAGE ; test "\e[${DEFAULT}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "success") ; message "test " "success" ; echo $MESSAGE ; test "\e[${GREEN}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "warning") ; message "test " "warning" ; echo $MESSAGE ; test "\e[${YELLOW}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "error") ; message "test " "error" ; echo $MESSAGE ; test "\e[${RED}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "red") ; message "test " "red" ; echo $MESSAGE ; test "\e[${RED}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "green") ; message "test " "green" ; echo $MESSAGE ; test "\e[${GREEN}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "yellow") ; message "test " "yellow" ; echo $MESSAGE ; test "\e[${YELLOW}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "blue") ; message "test " "blue" ; echo $MESSAGE ; test "\e[${BLUE}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "purple") ; message "test " "purple" ; echo $MESSAGE ; test "\e[${PURPLE}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "cyan") ; message "test " "cyan" ; echo $MESSAGE ; test "\e[${CYAN}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "default") ; message "test " "default" ; echo "$MESSAGE" ; test "\e[${DEFAULT}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "success") ; message "test " "success" ; echo "$MESSAGE" ; test "\e[${GREEN}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "warning") ; message "test " "warning" ; echo "$MESSAGE" ; test "\e[${YELLOW}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "error") ; message "test " "error" ; echo "$MESSAGE" ; test "\e[${RED}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "red") ; message "test " "red" ; echo "$MESSAGE" ; test "\e[${RED}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "green") ; message "test " "green" ; echo "$MESSAGE" ; test "\e[${GREEN}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "yellow") ; message "test " "yellow" ; echo "$MESSAGE" ; test "\e[${YELLOW}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "blue") ; message "test " "blue" ; echo "$MESSAGE" ; test "\e[${BLUE}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "purple") ; message "test " "purple" ; echo "$MESSAGE" ; test "\e[${PURPLE}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "cyan") ; message "test " "cyan" ; echo "$MESSAGE" ; test "\e[${CYAN}m%b\e[0m" = "$MESSAGE"
 
-  MESSAGE=$(message_make "default" "bold") ; message "test " "default" "bold" ; echo $MESSAGE ; test "\e[${STYLE_BOLD}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "default" "italic") ; message "test " "default" "italic" ; echo $MESSAGE ; test "\e[${STYLE_ITALIC}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "default" "underlined") ; message "test " "default" "underlined" ; echo $MESSAGE ; test "\e[${STYLE_UNDERLINED}m%b\e[0m" = "$MESSAGE"
-  MESSAGE=$(message_make "default" "inverted") ; message "test " "default" "inverted" ; echo $MESSAGE ; test "\e[${STYLE_INVERTED}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "default" "bold") ; message "test " "default" "bold" ; echo "$MESSAGE" ; test "\e[${STYLE_BOLD}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "default" "italic") ; message "test " "default" "italic" ; echo "$MESSAGE" ; test "\e[${STYLE_ITALIC}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "default" "underlined") ; message "test " "default" "underlined" ; echo "$MESSAGE" ; test "\e[${STYLE_UNDERLINED}m%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "default" "inverted") ; message "test " "default" "inverted" ; echo "$MESSAGE" ; test "\e[${STYLE_INVERTED}m%b\e[0m" = "$MESSAGE"
 
-  MESSAGE=$(message_make "red" "bold") ; message "test " "red" "bold" ; echo $MESSAGE ; test "\e[$STYLE_BOLD%b\e[0m" = "$MESSAGE"
+  MESSAGE=$(message_make "red" "bold") ; message "test " "red" "bold" ; echo "$MESSAGE" ; test "\e[$STYLE_BOLD%b\e[0m" = "$MESSAGE"
 }
