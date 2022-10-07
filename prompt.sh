@@ -1,5 +1,16 @@
 #!/bin/bash -e
 
+function confirm {
+  local QUESTION="$1"
+  read -p "$QUESTION (y/n) " -n 1 -r
+  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  then
+      echo ""
+  else
+      echo "1"
+  fi
+}
+
 function promptValue {
   local VARIABLE_NAME=$1
   local DESCRIPTION=$2
