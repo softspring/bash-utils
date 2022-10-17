@@ -1,6 +1,9 @@
 #!/bin/bash -e
 
 ## THIS FILE IS DEPRECATED
+echo ""
+printf "\033[1;33mTHIS bash-utils INCLUDING METHOD (include.sh) IS DEPRECATED, please see README and use new method \e[0m\n"
+echo ""
 
 if [[ -z $UTILS_TMP_PATH ]]
 then
