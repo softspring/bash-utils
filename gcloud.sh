@@ -407,7 +407,7 @@ function gcloudSecretsCreateFromFile {
   then
     warning "MISSING\n"
     gcloud secrets create $SECRET_NAME \
-     --project=$BUILD_PROJECT \
+     --project=$PROJECT \
      --data-file=$FILE $ARGUMENTS
   else
     success "OK\n"
@@ -426,11 +426,11 @@ function gcloudSecretsUpsertFromFile {
   then
     warning "MISSING\n"
     gcloud secrets create $SECRET_NAME \
-     --project=$BUILD_PROJECT \
+     --project=$PROJECT \
      --data-file=$FILE $ARGUMENTS
   else
     gcloud secrets versions add $SECRET_NAME \
-     --project=$BUILD_PROJECT \
+     --project=$PROJECT \
      --data-file=$FILE
     success "UPDATED\n"
   fi
@@ -448,7 +448,7 @@ function gcloudSecretsCreate {
   then
     warning "MISSING\n"
     echo -n $VALUE | gcloud secrets create $SECRET_NAME \
-     --project=$BUILD_PROJECT \
+     --project=$PROJECT \
      --data-file=- $ARGUMENTS
   else
     success "OK\n"
@@ -467,11 +467,11 @@ function gcloudSecretsUpsert {
   then
     warning "MISSING\n"
     echo -n $VALUE | gcloud secrets create $SECRET_NAME \
-     --project=$BUILD_PROJECT \
+     --project=$PROJECT \
      --data-file=- $ARGUMENTS
   else
     echo -n $VALUE | gcloud secrets versions add $SECRET_NAME \
-     --project=$BUILD_PROJECT \
+     --project=$PROJECT \
      --data-file=-
     success "UPDATED\n"
   fi
@@ -486,7 +486,7 @@ function gcloudSecretsDelete {
   if [[ $(gcloudSecretExists $PROJECT $SECRET_NAME) == 1 ]]
   then
     gcloud secrets delete $SECRET_NAME \
-     --project=$BUILD_PROJECT -q
+     --project=$PROJECT -q
      success "DELETED\n"
   else
     success "IGNORED\n"
