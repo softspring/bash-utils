@@ -870,19 +870,22 @@ function gcloudRunServiceDeploy {
 # ######################################################################
 # GCS
 
-# gcloudBucketCreate $PROJECT $BUCKET_NAME $TYPE="STANDARD" $REGION="EUROPE-WEST1"
+# gcloudBucketCreate $PROJECT $BUCKET_NAME $DEFAULT_STORAGE_CLASS="STANDARD" $BUCKET_LOCATION="EUROPE-WEST1"
 function gcloudBucketCreate {
     local PROJECT=$1
     dieIfEmpty "$PROJECT" "Missing required PROJECT parameter in gcloudBucketCreate function\n" 1
     local BUCKET_NAME=$2
     dieIfEmpty "$BUCKET_NAME" "Missing required BUCKET_NAME parameter in gcloudBucketCreate function\n" 1
-    local TYPE=${3:-STANDARD}
-    local REGION=${4:-EUROPE-WEST1}
+    local DEFAULT_STORAGE_CLASS=${3:-"STANDARD"}
+    local BUCKET_LOCATION=${4:-"EUROPE-WEST1"}
 
     message "Checking $BUCKET_NAME bucket in $PROJECT: "
     if [[ $(gcloudBucketExists "$PROJECT" "$BUCKET_NAME") == 0 ]]; then
         warning "MISSING\n"
-        gsutil mb -p "$PROJECT" -c "$TYPE" -l "$REGION" -b on "gs://$BUCKET_NAME"
+        # see https://cloud.google.com/storage/docs/creating-buckets?hl=es-419
+        gcloud storage buckets create "gs://$BUCKET_NAME" --project="$PROJECT" --default-storage-class="$DEFAULT_STORAGE_CLASS" --location="$BUCKET_LOCATION"
+        # --uniform-bucket-level-access
+        # gsutil mb -p "$PROJECT" -c "$DEFAULT_STORAGE_CLASS" -l "$BUCKET_LOCATION" -b on "gs://$BUCKET_NAME" # <<--- old command
     else
         success "OK\n"
     fi
@@ -895,7 +898,8 @@ function gcloudBucketExists {
     local BUCKET_NAME=$2
     dieIfEmpty "$BUCKET_NAME" "Missing required BUCKET_NAME parameter in gcloudBucketExists function\n" 1
 
-    if [ "$(gsutil ls -p "$PROJECT" | grep -c "gs://$BUCKET_NAME/")" -eq 1 ]; then
+    # if [ "$(gsutil ls -p "$PROJECT" | grep -c "gs://$BUCKET_NAME/")" -eq 1 ]; then  # <<--- old command
+    if [ "$(gcloud storage buckets list --project="$PROJECT" --format='value(name)' --filter="name~^$BUCKET_NAME$" | wc -l)" -eq 1 ]; then
         echo 1
     else
         echo 0
@@ -928,7 +932,7 @@ function gcloudBucketSetPublic {
     local BUCKET_NAME=$2
     dieIfEmpty "$BUCKET_NAME" "Missing required BUCKET_NAME parameter in gcloudBucketSetPublic function\n" 1
 
-    gcloudBucketPermission "$PROJECT" "$BUCKET_NAME" allUsers objectViewer
+    gcloudBucketPermission "$PROJECT" "$BUCKET_NAME" allUsers "roles/storage.objectViewer"
 }
 
 # gcloudBucketPermission $PROJECT $BUCKET_NAME $TO $PERMISSION
@@ -942,7 +946,8 @@ function gcloudBucketPermission {
     local PERMISSION=$4
     dieIfEmpty "$PERMISSION" "Missing required PERMISSION parameter in gcloudBucketPermission function\n" 1
 
-    gsutil iam ch "$TO:$PERMISSION" "gs://$BUCKET_NAME"
+    gcloud storage buckets add-iam-policy-binding "gs://$BUCKET_NAME" --member="$TO" --role="$PERMISSION"
+    # gsutil iam ch "$TO:$PERMISSION" "gs://$BUCKET_NAME"  # <<--- old command
 }
 
 # ######################################################################
