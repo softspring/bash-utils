@@ -20,7 +20,7 @@ function promptValue {
   then
     warning "MISSING\n"
 
-    if [[ -z $DESCRIPTION ]]
+    if [[ -n $DESCRIPTION ]]
     then
       message "$DESCRIPTION"
     fi
