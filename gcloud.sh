@@ -584,7 +584,7 @@ function gcloudTopicCreate {
     message "Checking $TOPIC_NAME topic in $PROJECT: "
     if [[ $(gcloudPubSubTopicExists "$PROJECT" "$TOPIC_NAME") == 0 ]]; then
         warning "MISSING\n"
-        gcloud pubsub topics create "$TOPIC_NAME" --project="$PROJECT" "$ARGUMENTS"
+        gcloud pubsub topics create "$TOPIC_NAME" --project="$PROJECT" $ARGUMENTS
     else
         success "OK\n"
     fi
