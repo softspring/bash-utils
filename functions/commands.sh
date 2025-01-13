@@ -1,5 +1,11 @@
 #!/bin/bash
 
+function load_dir {
+    local DIR="$1"
+    load_utils "$DIR"
+    load_commands "$DIR"
+}
+
 # load_utils ".dev" # load util scripts stating with _ from .dev directory (not _index)
 function load_utils {
     local LOAD_PATH="$1"
@@ -15,6 +21,7 @@ function load_utils {
         [ "${SCRIPT_ID:0:1}" != "_" ] && continue
         [ "$SCRIPT_ID" == "_index" ] && continue
 
+        message "Running $SCRIPT\n" "cyan"
         # message "Loading \"$SCRIPT_ID\" script\n"
         # shellcheck disable=SC1090
         source "$SCRIPT"
@@ -157,7 +164,7 @@ function _do_run_command {
     local ARGUMENTS="${@:4}"
 
     if [[ -n $FILE ]]; then
-        message "Loading $FILE\n"
+        message "Loading $FILE\n" "cyan"
         # shellcheck disable=SC1090
         source "$FILE"
     fi
