@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+# TODO RUN COMMAND INSIDE DOCKER IMAGE
+
 function yamlGetValue {
     local FILE="$1"
     local KEY="$2"
