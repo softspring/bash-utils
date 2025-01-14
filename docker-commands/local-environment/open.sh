@@ -10,10 +10,19 @@ COMMAND_HELP_TEXT="
 
 [ -z "${UTILS_TMP_PATH}" ] && echo "Run $COMMAND_NAME command with project script:" && echo "$ $COMMAND_HELP_USAGE" && exit 1
 
+function open_messages {
+    message "\n\nCheck application at https://$LOCAL_DEFAULT_DOMAIN/\n"
+}
+
+function open_do {
+    message "\nOpening browser https://$LOCAL_DEFAULT_DOMAIN/ ...\n"
+    openBrowser "https://$LOCAL_DEFAULT_DOMAIN/"
+}
+
 function run_open {
     block 'OPEN'
     gcloudSelectAccount "$GCLOUD_ACCOUNT"
 
-    message "\nCheck application at https://$LOCAL_DEFAULT_DOMAIN/\n\n"
-    openBrowser "https://$LOCAL_DEFAULT_DOMAIN/"
+    open_messages
+    open_do
 }
