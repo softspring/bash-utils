@@ -1,14 +1,15 @@
 #!/bin/bash -e
 
-# TODO RUN COMMAND INSIDE DOCKER IMAGE
+YAML_INDENT_SPACES=4
 
 function yamlGetValue {
     local FILE="$1"
     local KEY="$2"
 
-    VALUE=$(yq "$KEY" "$FILE")
+    # shellcheck disable=SC2046
+    VALUE=$(docker run --user $(id -u):$(id -g) --rm -v .:/workdir mikefarah/yq "$KEY" "/workdir/$FILE")
 
-    echo "value: $VALUE"
+    echo "$VALUE"
 }
 
 function yamlSetValue {
@@ -16,11 +17,16 @@ function yamlSetValue {
     local KEY="$2"
     local VALUE="$3"
 
-    yq -iy "$KEY=$VALUE" "$FILE"
+    # shellcheck disable=SC2046
+    docker run --user $(id -u):$(id -g) --rm -v .:/workdir mikefarah/yq "$KEY=\"$VALUE\"" "/workdir/$FILE" --inplace --indent $YAML_INDENT_SPACES
 }
 
 function yamlUnsetKey {
-    echo "Unset key"
+    local FILE="$1"
+    local KEY="$2"
+
+    # shellcheck disable=SC2046
+    docker run --user $(id -u):$(id -g) --rm -v .:/workdir mikefarah/yq "del($KEY)" "/workdir/$FILE" --inplace --indent $YAML_INDENT_SPACES
 }
 
 function yamlRemoveArrayEntryByValue {
@@ -28,6 +34,6 @@ function yamlRemoveArrayEntryByValue {
     local KEY="$2"
     local VALUE="$3"
 
-    # shellcheck disable=SC1087
-    yq -yi "del($KEY[] | select(. == \"$VALUE\"))" "$FILE"
+    # shellcheck disable=SC2046
+    docker run --user $(id -u):$(id -g) --rm -v .:/workdir mikefarah/yq "del($KEY[] | select(. == \"$VALUE\"))" "/workdir/$FILE" --inplace --indent $YAML_INDENT_SPACES
 }
