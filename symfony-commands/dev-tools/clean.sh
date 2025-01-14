@@ -21,34 +21,34 @@ function run_clean {
     dockerComposeExec php rm -rf var/cache/*
     success "Done\n"
 
-    message "Running cache:clean command: "
-    dockerComposeExec php bin/console cache:clean --env=dev
+    message "Running cache:clear command: "
+    dockerComposeExec php bin/console cache:clear --env=dev
     success "Done\n"
 
     title "Cleaning doctrine caches"
 
-    message "Running doctrine:cache:clean-metadata command: "
-    dockerComposeExec php bin/console doctrine:cache:clean-metadata --env=dev
+    message "Running doctrine:cache:clear-metadata command: "
+    dockerComposeExec php bin/console doctrine:cache:clear-metadata --env=dev
     success "Done\n"
 
-    message "Running doctrine:cache:clean-collection-region command: "
-    dockerComposeExec php bin/console doctrine:cache:clean-collection-region --all --env=dev
+    message "Running doctrine:cache:clear-collection-region command: "
+    dockerComposeExec php bin/console doctrine:cache:clear-collection-region --all --env=dev
     success "Done\n"
 
-    message "Running doctrine:cache:clean-entity-region command: "
-    dockerComposeExec php bin/console doctrine:cache:clean-entity-region --all --env=dev
+    message "Running doctrine:cache:clear-entity-region command: "
+    dockerComposeExec php bin/console doctrine:cache:clear-entity-region --all --env=dev
     success "Done\n"
 
-    message "Running doctrine:cache:clean-query command: "
-    dockerComposeExec php bin/console doctrine:cache:clean-query --env=dev
+    message "Running doctrine:cache:clear-query command: "
+    dockerComposeExec php bin/console doctrine:cache:clear-query --env=dev
     success "Done\n"
 
-    message "Running doctrine:cache:clean-query-region command: "
-    dockerComposeExec php bin/console doctrine:cache:clean-query-region --env=dev
+    message "Running doctrine:cache:clear-query-region command: "
+    dockerComposeExec php bin/console doctrine:cache:clear-query-region --env=dev
     success "Done\n"
 
-    message "Running doctrine:cache:clean-result command: "
-    dockerComposeExec php bin/console doctrine:cache:clean-result --env=dev
+    message "Running doctrine:cache:clear-result command: "
+    dockerComposeExec php bin/console doctrine:cache:clear-result --env=dev
     success "Done\n"
 
     title "Cleaning cache pools"
