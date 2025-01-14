@@ -159,15 +159,15 @@ function find_command {
 function _do_run_command {
     local GROUP="$1"
     local COMMAND="$2"
-    local FILE="$3"
     # shellcheck disable=SC2124
-    local ARGUMENTS="${@:4}"
+    local ARGUMENTS="${@:3}"
 
-    if [[ -n $FILE ]]; then
-        message "Loading $FILE\n" "cyan"
-        # shellcheck disable=SC1090
-        source "$FILE"
-    fi
+    # PREVENT LOADING COMMAND AGAIN, TO ALLOW OVERRIDING ITEMS
+    # if [[ -n $FILE ]]; then
+    #     message "Loading $FILE\n" "cyan"
+    #     # shellcheck disable=SC1090
+    #     source "$FILE"
+    # fi
 
     if [[ -n $GROUP ]]; then
         # echo "RUN $GROUP $COMMAND from $FILE"
@@ -191,10 +191,10 @@ function run_command {
 
     if [[ -n ${_COMMANDS_GROUPS_PREFIX[$COMMAND_FOUND_KEY]} ]]; then
         # SUBCOMMAND
-        _do_run_command "${_COMMANDS_GROUPS_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${_COMMANDS_FILES[$COMMAND_FOUND_KEY]}" "${@:3}"
+        _do_run_command "${_COMMANDS_GROUPS_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:3}"
     else
         # COMMAND
-        _do_run_command "${_COMMANDS_GROUPS_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${_COMMANDS_FILES[$COMMAND_FOUND_KEY]}" "${@:2}"
+        _do_run_command "${_COMMANDS_GROUPS_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:2}"
     fi
 }
 
