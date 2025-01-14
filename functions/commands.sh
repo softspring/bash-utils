@@ -189,12 +189,12 @@ function run_command {
         die "Command not found (maybe you forgot to run 'find_command' before 'run_command')\n"
     fi
 
-    if [[ -n ${_COMMANDS_GROUPS_PREFIX[$COMMAND_FOUND_KEY]} ]]; then
+    if [[ -n ${_COMMANDS_GROUP[$COMMAND_FOUND_KEY]} ]]; then
         # SUBCOMMAND
-        _do_run_command "${_COMMANDS_GROUPS_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:3}"
+        _do_run_command "${_COMMANDS_GROUP[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:3}"
     else
         # COMMAND
-        _do_run_command "${_COMMANDS_GROUPS_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:2}"
+        _do_run_command "${_COMMANDS_GROUP[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:2}"
     fi
 }
 
