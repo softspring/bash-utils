@@ -12,6 +12,7 @@ COMMAND_HELP_TEXT="
 
 function run_open {
     block 'OPEN'
+    gcloudSelectAccount "$GCLOUD_ACCOUNT"
 
     message "\nCheck application at https://$LOCAL_DEFAULT_DOMAIN/\n\n"
     openBrowser "https://$LOCAL_DEFAULT_DOMAIN/"

@@ -10,8 +10,13 @@ COMMAND_HELP_TEXT="
 
 [ -z "${UTILS_TMP_PATH}" ] && echo "Run $COMMAND_NAME command with project script:" && echo "$ $COMMAND_HELP_USAGE" && exit 1
 
+function stop_docker_down {
+    title "Stopping Docker environment..."
+    dockerComposeDown
+}
+
 function run_stop {
     block 'STOP'
     gcloudSelectAccount "$GCLOUD_ACCOUNT"
-    dockerComposeDown
+    stop_docker_down
 }

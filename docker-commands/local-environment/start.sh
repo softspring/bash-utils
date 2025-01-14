@@ -10,6 +10,16 @@ COMMAND_HELP_TEXT="
 
 [ -z "${UTILS_TMP_PATH}" ] && echo "Run $COMMAND_NAME command with project script:" && echo "$ $COMMAND_HELP_USAGE" && exit 1
 
+function start_docker_build {
+    title "Building Docker images..."
+    dockerComposeBuild
+}
+
+function start_docker_up {
+    title "Starting Docker environment..."
+    dockerComposeUp "" "--force-recreate --remove-orphans"
+}
+
 function start_composer {
     title "\nRunning Composer..."
     dockerComposeExec php "composer install --no-scripts --no-ansi --no-progress --no-interaction"
@@ -27,9 +37,8 @@ function run_start {
     block 'START'
     gcloudSelectAccount "$GCLOUD_ACCOUNT"
 
-    dockerComposeBuild
-    dockerComposeUp "" "--force-recreate --remove-orphans"
-
+    start_docker_build
+    start_docker_up
     start_composer
     start_symfony
 
