@@ -30,6 +30,7 @@ function load_utils {
 
 declare -A _COMMANDS_GROUP_NAME
 declare -A _COMMANDS_GROUP
+declare -A _COMMANDS_GROUP_PREFIX
 declare -A _COMMANDS_NAMES
 declare -A _COMMANDS_FILES
 declare -A _COMMANDS_OVERWRITTEN
@@ -88,6 +89,7 @@ function _load_commands_in_dir {
         fi
 
         _COMMANDS_GROUP["$COMMAND_KEY"]="$COMMAND_DIR_ID"
+        _COMMANDS_GROUP_PREFIX["$COMMAND_KEY"]="$COMMAND_GROUP"
         _COMMANDS_NAMES["$COMMAND_KEY"]="$COMMAND_NAME"
         _COMMANDS_FILES["$COMMAND_KEY"]="$SCRIPT"
         if [[ -n $COMMAND_GROUP ]]; then
@@ -189,12 +191,12 @@ function run_command {
         die "Command not found (maybe you forgot to run 'find_command' before 'run_command')\n"
     fi
 
-    if [[ -n ${_COMMANDS_GROUP[$COMMAND_FOUND_KEY]} ]]; then
+    if [[ -n ${_COMMANDS_GROUP_PREFIX[$COMMAND_FOUND_KEY]} ]]; then
         # SUBCOMMAND
-        _do_run_command "${_COMMANDS_GROUP[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:3}"
+        _do_run_command "${_COMMANDS_GROUP_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:3}"
     else
         # COMMAND
-        _do_run_command "${_COMMANDS_GROUP[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:2}"
+        _do_run_command "${_COMMANDS_GROUP_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:2}"
     fi
 }
 
