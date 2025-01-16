@@ -191,6 +191,12 @@ function run_command {
         die "Command not found (maybe you forgot to run 'find_command' before 'run_command')\n"
     fi
 
+    # restore command values
+    COMMAND_NAME=${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}
+    COMMAND_HELP_DESCRIPTION=${_COMMANDS_HELP_DESCRIPTION[$COMMAND_FOUND_KEY]}
+    COMMAND_HELP_USAGE=${_COMMANDS_HELP_USAGE[$COMMAND_FOUND_KEY]}
+    COMMAND_HELP_TEXT=${_COMMANDS_HELP_TEXT[$COMMAND_FOUND_KEY]}
+
     if [[ -n ${_COMMANDS_GROUP_PREFIX[$COMMAND_FOUND_KEY]} ]]; then
         # SUBCOMMAND
         _do_run_command "${_COMMANDS_GROUP_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:3}"
