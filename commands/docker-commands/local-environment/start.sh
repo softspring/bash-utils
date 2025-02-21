@@ -12,4 +12,5 @@ start_docker_up
 start_composer
 start_symfony
 
-run_open
+open_messages
+open_do
