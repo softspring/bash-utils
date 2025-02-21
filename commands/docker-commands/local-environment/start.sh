@@ -13,4 +13,6 @@ start_composer
 start_symfony
 
 open_messages
-open_do
+
+success "\nDone! Project is started.\n"
+message "\nRun ${ANSI_WARNING}project open${ANSI_END} to open project in browser\n"
