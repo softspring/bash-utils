@@ -21,4 +21,4 @@ ARGUMENTS="${@:1}"
 dieIfDockerContainerNotRunning php
 
 # shellcheck disable=SC2086
-dockerComposeExec $PHP_CONTAINER_NAME php $ARGUMENTS
+docker compose exec $PHP_CONTAINER_NAME php $ARGUMENTS

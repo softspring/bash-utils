@@ -23,4 +23,4 @@ ARGUMENTS="${@:1}"
 dieIfDockerContainerNotRunning yarn
 
 # shellcheck disable=SC2086
-dockerComposeExec $YARN_CONTAINER_NAME yarn $ARGUMENTS
+docker compose exec $YARN_CONTAINER_NAME yarn $ARGUMENTS
