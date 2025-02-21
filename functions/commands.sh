@@ -179,6 +179,10 @@ function run_command {
         exit 1
     fi
 
+    # shellcheck disable=SC2034
+    COMMAND_HELP_DESCRIPTION="${_COMMANDS_DESCRIPTIONS[$COMMAND_INDEX]}"
+    # shellcheck disable=SC2034
+    COMMAND_HELP_USAGE="${_COMMANDS_USAGES[$COMMAND_INDEX]}"
     # shellcheck disable=SC1090
     source "${_COMMANDS_SCRIPT_PATHS[$COMMAND_INDEX]}" "$@"
 }

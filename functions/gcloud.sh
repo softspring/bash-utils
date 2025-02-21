@@ -9,7 +9,7 @@ function gcloudSelectAccount {
     dieIfEmpty "$ACCOUNT" "Missing required ACCOUNT parameter in gcloudSelectAccount function\n" 1
 
     gcloud config set account "$ACCOUNT"
-    message "Selected $ACCOUNT gcloud account"
+    message "Selected $ACCOUNT gcloud account\n" "blue"
 }
 
 # ######################################################################
@@ -21,7 +21,7 @@ function gcloudSelectProject {
     dieIfEmpty "$PROJECT" "Missing required PROJECT parameter in gcloudSelectProject function\n" 1
 
     gcloud config set project "$PROJECT"
-    message "Selected $PROJECT gcloud project"
+    message "Selected $PROJECT gcloud project\n" "blue"
 }
 
 # gcloudProjectCreate $PROJECT $PROJECT_NAME="$PROJECT" $ORGANIZATION_ID=""
