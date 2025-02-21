@@ -101,3 +101,9 @@ function dockerGetContainerName {
 
     docker compose ps --format '{{.Name}}' $CONTAINER
 }
+
+function dockerGetNetworkSubnet {
+    local NETWORK="$1"
+
+    docker network inspect "$NETWORK" -f '{{ (index .IPAM.Config 0).Subnet }}'
+}

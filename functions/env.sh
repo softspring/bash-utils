@@ -6,7 +6,7 @@ function loadEnvFile {
 
   if [ "$SILENCE" -eq 0 ]
   then
-    message "Load env variables from $ENV_FILE\n"
+      message "Load env variables from ${ENV_FILE/$BASE_DIR\//}\n" "warning"
   fi
   set -a;
   # shellcheck disable=SC1090

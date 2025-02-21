@@ -1,13 +1,13 @@
 #!/bin/bash
 
-function load_dir {
+function add_repository {
     local DIR="$1"
-    load_utils "$DIR"
-    load_commands "$DIR"
+    load_functions_directory "$DIR"
+    load_commands_directory "$DIR"
 }
 
-# load_utils ".dev" # load util scripts stating with _ from .dev directory (not _index)
-function load_utils {
+# load (and run) util scripts stating with _ from repositories
+function load_functions_directory {
     local LOAD_PATH="$1"
 
     for SCRIPT in "$LOAD_PATH"/*; do
@@ -15,44 +15,82 @@ function load_utils {
         SCRIPT_ID=$(basename -- "$SCRIPT" ".sh")
 
         # if is a directory, call recursively and continue
-        [ -d "$SCRIPT" ] && load_utils "$SCRIPT" "$SCRIPT_ID" && continue
+        [ -d "$SCRIPT" ] && load_functions_directory "$SCRIPT" "$SCRIPT_ID" && continue
 
         # skip tools scripts (starting with _)
         [ "${SCRIPT_ID:0:1}" != "_" ] && continue
-        [ "$SCRIPT_ID" == "_index" ] && continue
+        [ "$SCRIPT_ID" == "_group" ] && continue
 
-        message "Running $SCRIPT\n" "cyan"
-        # message "Loading \"$SCRIPT_ID\" script\n"
+        message "Loading ${SCRIPT/$BASE_DIR\//}\n" "cyan"
+
         # shellcheck disable=SC1090
         source "$SCRIPT"
     done
 }
 
-declare -A _COMMANDS_GROUP_NAME
-declare -A _COMMANDS_GROUP
-declare -A _COMMANDS_GROUP_PREFIX
-declare -A _COMMANDS_NAMES
-declare -A _COMMANDS_FILES
-declare -A _COMMANDS_OVERWRITTEN
-declare -A _COMMANDS_HELP_DESCRIPTION
-declare -A _COMMANDS_HELP_USAGE
-declare -A _COMMANDS_HELP_TEXT
-declare -A _GROUPS_NAMES
-declare -A _GROUPS_TITLES
+# load commands from repositories
+function load_commands_directory {
+    local _COMMANDS_BASE_PATH="$1"
 
-# this is internal function, do not use it
+    for DIRECTORY in "$_COMMANDS_BASE_PATH"/*; do
+        # if is not a directory, skip
+        [ ! -d "$DIRECTORY" ] && continue
+
+        _load_commands_in_dir "$DIRECTORY"
+    done
+}
+
+_GROUPS_KEYS=()
+_GROUPS_NAMES=()
+_GROUPS_DESCRIPTIONS=()
+_COMMANDS_GROUPS=()
+_COMMANDS_KEYS=()
+_COMMANDS_NAMES=()
+_COMMANDS_NAMES_PREFIX=()
+_COMMANDS_DESCRIPTIONS=()
+_COMMANDS_USAGES=()
+_COMMANDS_TEXTS=()
+_COMMANDS_SCRIPT_PATHS=()
+
+# load commands, storing ubication and help information extracted from "#> @attribute: " comments
 function _load_commands_in_dir {
-    local COMMANDS_DIR="$1"
+    local _COMMANDS_DIR="$1"
 
-    # define variables
     local COMMAND_DIR_ID
     local SCRIPT_ID
     local COMMAND_KEY
     local SCRIPT
 
-    COMMAND_DIR_ID=$(basename -- "$COMMANDS_DIR")
+    COMMAND_DIR_ID=$(basename -- "$_COMMANDS_DIR")
 
-    for SCRIPT in "$COMMANDS_DIR"/*; do
+    # Store group information >>
+    local CURRENT_GROUP_INDEX
+    for i in "${!_GROUPS_KEYS[@]}"; do
+        if [[ "${_GROUPS_KEYS[$i]}" == "$COMMAND_DIR_ID" ]]; then
+            CURRENT_GROUP_INDEX=$i
+            break
+        fi
+    done
+    if [ -z "$CURRENT_GROUP_INDEX" ]; then
+        _GROUPS_KEYS+=("$COMMAND_DIR_ID")
+        if [ -f "$_COMMANDS_DIR/_group.sh" ]; then
+            _GROUPS_NAMES+=("$(grep '^#> @group-name:' "$_COMMANDS_DIR/_group.sh" | sed 's/#> @group-name:\s*//' | tr -d '\n')")
+            _GROUPS_DESCRIPTIONS+=("$(grep '^#> @group-description:' "$_COMMANDS_DIR/_group.sh" | sed 's/#> @group-description:\s*//' | tr -d '\n')")
+        else
+            _GROUPS_NAMES+=("")
+            _GROUPS_DESCRIPTIONS+=("")
+        fi
+        CURRENT_GROUP_INDEX=$((${#_GROUPS_KEYS[@]} - 1))
+    else
+        if [ -f "$_COMMANDS_DIR/_group.sh" ]; then
+            _GROUPS_NAMES[$CURRENT_GROUP_INDEX]="$(grep '^#> @group-name:' "$_COMMANDS_DIR/_group.sh" | sed 's/#> @group-name:\s*//' | tr -d '\n')"
+            _GROUPS_DESCRIPTIONS[$CURRENT_GROUP_INDEX]="$(grep '^#> @group-description:' "$_COMMANDS_DIR/_group.sh" | sed 's/#> @group-description:\s*//' | tr -d '\n')"
+        fi
+    fi
+    # << Store group information
+
+    # load commands
+    for SCRIPT in "$_COMMANDS_DIR"/*; do
         # SCRIPT_BASE_NAME=$(basename -- "$SCRIPT")
         # SCRIPT=/home/user/example-commands/dev/hello.sh
         SCRIPT_ID=$(basename -- "$SCRIPT" ".sh") # hello
@@ -64,182 +102,83 @@ function _load_commands_in_dir {
         # skip tools scripts (starting with _)
         [ "${SCRIPT_ID:0:1}" == "_" ] && continue
 
-        # shellcheck disable=SC2034
-        # do not keep other commands variables
-        COMMAND_GROUP=
-        # load _index file if exists
-        [[ -f "$COMMANDS_DIR/_index.sh" ]] && source "$COMMANDS_DIR/_index.sh"
+        COMMAND_NAME=$(grep '^#> @command-name:' "$SCRIPT" | sed 's/#> @command-name:\s*//' | tr -d '\n')
+        COMMAND_DESCRIPTION=$(grep '^#> @help-description:' "$SCRIPT" | sed 's/#> @help-description:\s*//' | tr -d '\n')
+        COMMAND_USAGE=$(grep '^#> @help-usage:' "$SCRIPT" | sed 's/#> @help-usage:\s*//' | tr -d '\n')
+        COMMAND_TEXT=$(grep '^#> #' "$SCRIPT" | sed 's/^#> #\s*//')
 
-        _GROUPS_NAMES["$COMMAND_DIR_ID"]="$COMMAND_GROUP"
-        _GROUPS_TITLES["$COMMAND_DIR_ID"]="$COMMAND_HELP_TITLE"
-
-        # shellcheck disable=SC2034
-        # do not keep other commands variables
-        COMMAND_NAME=
-        COMMAND_HELP_DESCRIPTION=
-        COMMAND_HELP_USAGE=
-        COMMAND_HELP_TEXT=
-        # shellcheck disable=SC1090
-        source "$SCRIPT"
-
-        # check if already defined
-        _COMMANDS_OVERWRITTEN["$COMMAND_KEY"]="0"
-        if [[ "${_COMMANDS_NAMES[$COMMAND_KEY]}" ]]; then
-            _COMMANDS_OVERWRITTEN["$COMMAND_KEY"]="1"
-        fi
-
-        _COMMANDS_GROUP["$COMMAND_KEY"]="$COMMAND_DIR_ID"
-        _COMMANDS_GROUP_PREFIX["$COMMAND_KEY"]="$COMMAND_GROUP"
-        _COMMANDS_NAMES["$COMMAND_KEY"]="$COMMAND_NAME"
-        _COMMANDS_FILES["$COMMAND_KEY"]="$SCRIPT"
-        if [[ -n $COMMAND_GROUP ]]; then
-            _COMMANDS_GROUP_NAME["$COMMAND_KEY"]="$COMMAND_GROUP $COMMAND_NAME"
-        else
-            _COMMANDS_GROUP_NAME["$COMMAND_KEY"]="$COMMAND_NAME"
-        fi
-        _COMMANDS_HELP_DESCRIPTION["$COMMAND_KEY"]="$COMMAND_HELP_DESCRIPTION"
-        _COMMANDS_HELP_USAGE["$COMMAND_KEY"]="$COMMAND_HELP_USAGE"
-        _COMMANDS_HELP_TEXT["$COMMAND_KEY"]="$COMMAND_HELP_TEXT"
-    done
-}
-
-function load_commands {
-    local COMMANDS_BASE_PATH="$1"
-
-    for DIRECTORY in "$COMMANDS_BASE_PATH"/*; do
-        # if is not a directory, skip
-        [ ! -d "$DIRECTORY" ] && continue
-
-        _load_commands_in_dir "$DIRECTORY"
-    done
-}
-
-COMMAND_FOUND_KEY=
-function find_command {
-    local COMMAND="$1"
-    local SUBCOMMAND="$2"
-
-    # on empty command show help
-    if [[ -z $COMMAND ]]; then
-        COMMAND_FOUND_KEY=0
-        return
-    fi
-
-    for key in "${!_COMMANDS_GROUP_NAME[@]}"; do
-        if [[ "${_COMMANDS_GROUP_NAME[$key]}" == "$COMMAND $SUBCOMMAND" ]]; then
-            COMMAND_FOUND_KEY="$key"
-            return
-        fi
-        if [[ "${_COMMANDS_GROUP_NAME[$key]}" == "$COMMAND" ]]; then
-            COMMAND_FOUND_KEY="$key"
-            return
-        fi
-    done
-
-    for group in "${!_GROUPS_NAMES[@]}"; do
-        if [[ "${_GROUPS_NAMES[$group]}" == "$COMMAND" ]]; then
-            if [[ -z "$SUBCOMMAND" ]]; then
-                error "\nCommand $COMMAND not found\n\n"
-            else
-                error "\nCommand $COMMAND $SUBCOMMAND not found\n\n"
+        # Check if the command key already exists and overwrite if necessary
+        for i in "${!_COMMANDS_KEYS[@]}"; do
+            if [[ "${_COMMANDS_KEYS[$i]}" == "$COMMAND_KEY" ]]; then
+                _COMMANDS_NAMES[$i]="$COMMAND_NAME"
+                _COMMANDS_DESCRIPTIONS[$i]="$COMMAND_DESCRIPTION"
+                _COMMANDS_USAGES[$i]="$COMMAND_USAGE"
+                _COMMANDS_TEXTS[$i]="$COMMAND_TEXT"
+                _COMMANDS_SCRIPT_PATHS[$i]="$SCRIPT"
+                _COMMANDS_GROUPS[$i]="$COMMAND_DIR_ID"
+                _COMMANDS_NAMES_PREFIX[$i]="${_GROUPS_NAMES[$CURRENT_GROUP_INDEX]}"
+                continue 2
             fi
+        done
 
-            message "Run "
-            message "project help $COMMAND" "warning"
-            message " to list available commands\n\n"
-            exit 1
-        fi
+        # If the command key does not exist, add it to the arrays
+        _COMMANDS_KEYS+=("$COMMAND_KEY")
+        _COMMANDS_NAMES+=("$COMMAND_NAME")
+        _COMMANDS_DESCRIPTIONS+=("$COMMAND_DESCRIPTION")
+        _COMMANDS_USAGES+=("$COMMAND_USAGE")
+        _COMMANDS_TEXTS+=("$COMMAND_TEXT")
+        _COMMANDS_SCRIPT_PATHS+=("$SCRIPT")
+        _COMMANDS_GROUPS+=("$COMMAND_DIR_ID")
+        _COMMANDS_NAMES_PREFIX+=("${_GROUPS_NAMES[$CURRENT_GROUP_INDEX]}")
     done
-
-    error "\nCommand $COMMAND not found\n\n"
-    message "Run "
-    message "project help" "warning"
-    message " to list available commands\n\n"
-    exit 1
-}
-
-function _do_run_command {
-    local GROUP="$1"
-    local COMMAND="$2"
-    # shellcheck disable=SC2124
-    local ARGUMENTS="${@:3}"
-
-    # PREVENT LOADING COMMAND AGAIN, TO ALLOW OVERRIDING ITEMS
-    # if [[ -n $FILE ]]; then
-    #     message "Loading $FILE\n" "cyan"
-    #     # shellcheck disable=SC1090
-    #     source "$FILE"
-    # fi
-
-    if [[ -n $GROUP ]]; then
-        # echo "RUN $GROUP $COMMAND from $FILE"
-        eval "run_${GROUP}_${COMMAND}" "$ARGUMENTS"
-    elif [[ -n $COMMAND ]]; then
-        # echo "RUN $COMMAND from $FILE"
-        eval "run_${COMMAND}" "$ARGUMENTS"
-    else
-        eval "run_help" "$ARGUMENTS"
-    fi
-    exit 0
-}
-
-function run_command {
-    local COMMAND="$1"
-    local SUBCOMMAND="$2"
-
-    if [[ -z $COMMAND_FOUND_KEY ]]; then
-        die "Command not found (maybe you forgot to run 'find_command' before 'run_command')\n"
-    fi
-
-    # restore command values
-    COMMAND_NAME=${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}
-    COMMAND_HELP_DESCRIPTION=${_COMMANDS_HELP_DESCRIPTION[$COMMAND_FOUND_KEY]}
-    COMMAND_HELP_USAGE=${_COMMANDS_HELP_USAGE[$COMMAND_FOUND_KEY]}
-    COMMAND_HELP_TEXT=${_COMMANDS_HELP_TEXT[$COMMAND_FOUND_KEY]}
-
-    if [[ -n ${_COMMANDS_GROUP_PREFIX[$COMMAND_FOUND_KEY]} ]]; then
-        # SUBCOMMAND
-        _do_run_command "${_COMMANDS_GROUP_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:3}"
-    else
-        # COMMAND
-        _do_run_command "${_COMMANDS_GROUP_PREFIX[$COMMAND_FOUND_KEY]}" "${_COMMANDS_NAMES[$COMMAND_FOUND_KEY]}" "${@:2}"
-    fi
 }
 
 function _debug_commands {
-    echo
-    echo "_COMMANDS_GROUP_NAME"
-    for key in "${!_COMMANDS_GROUP_NAME[@]}"; do
-        echo "$key: ${_COMMANDS_GROUP_NAME[$key]}"
+    for i in "${!_COMMANDS_KEYS[@]}"; do
+        echo "_COMMANDS_KEYS[$i]: ${_COMMANDS_KEYS[$i]}"
+        echo "_COMMANDS_NAMES[$i]: ${_COMMANDS_NAMES[$i]}"
+        echo "_COMMANDS_NAMES_PREFIX[$i]: ${_COMMANDS_NAMES_PREFIX[$i]}"
+        echo "_COMMANDS_DESCRIPTIONS[$i]: ${_COMMANDS_DESCRIPTIONS[$i]}"
+        echo "_COMMANDS_USAGES[$i]: ${_COMMANDS_USAGES[$i]}"
+        echo "_COMMANDS_TEXTS[$i]: ${_COMMANDS_TEXTS[$i]}"
+        echo "_COMMANDS_SCRIPT_PATHS[$i]: ${_COMMANDS_SCRIPT_PATHS[$i]}"
+        echo
+    done
+}
+
+function _debug_groups {
+    for i in "${!_GROUPS_KEYS[@]}"; do
+        echo "_GROUPS_KEYS[$i]: ${_GROUPS_KEYS[$i]}"
+        echo "_GROUPS_NAMES[$i]: ${_GROUPS_NAMES[$i]}"
+        echo "_GROUPS_DESCRIPTIONS[$i]: ${_GROUPS_DESCRIPTIONS[$i]}"
+        echo
+    done
+}
+
+function run_command {
+    local COMMAND_INDEX
+    for i in "${!_COMMANDS_KEYS[@]}"; do
+        if [[ "${_COMMANDS_NAMES_PREFIX[$i]}" == "$1" && "${_COMMANDS_NAMES[$i]}" == "$2" ]]; then
+            COMMAND_INDEX=$i
+            shift 2
+            break
+        elif [[ "${_COMMANDS_NAMES[$i]}" == "$1" ]]; then
+            COMMAND_INDEX=$i
+            shift
+            break
+        fi
     done
 
-    echo
-    echo "_COMMANDS_NAMES"
-    for key in "${!_COMMANDS_NAMES[@]}"; do
-        echo "$key: ${_COMMANDS_NAMES[$key]}"
-    done
+    # if command not found, show error message
+    if [ -z "$COMMAND_INDEX" ]; then
+        message "\nCommand not found\n\n" "error"
 
-    echo
-    echo "_COMMANDS_GROUP"
-    for key in "${!_COMMANDS_GROUP[@]}"; do
-        echo "$key: ${_COMMANDS_GROUP[$key]}"
-    done
+        message "Run "
+        message "project help $COMMAND" "warning"
+        message " to list available commands\n\n"
+        exit 1
+    fi
 
-    echo
-    echo "_COMMANDS_FILES"
-    for key in "${!_COMMANDS_FILES[@]}"; do
-        echo "$key: ${_COMMANDS_FILES[$key]}"
-    done
-
-    echo
-    echo "_GROUPS_NAMES"
-    for key in "${!_GROUPS_NAMES[@]}"; do
-        warning "$key: ${_GROUPS_NAMES[$key]}\n"
-    done
-
-    echo
-    echo "_GROUPS_TITLES"
-    for key in "${!_GROUPS_TITLES[@]}"; do
-        warning "$key: ${_GROUPS_TITLES[$key]}\n"
-    done
+    # shellcheck disable=SC1090
+    source "${_COMMANDS_SCRIPT_PATHS[$COMMAND_INDEX]}" "$@"
 }
