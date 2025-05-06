@@ -1,5 +1,17 @@
 #!/bin/bash -e
 
+function envFileContains {
+  local ENV_FILE=$1
+  local PROPERTY=$2
+
+  if grep -E -q "^$PROPERTY=" "$ENV_FILE"
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
 function loadEnvFile {
   local ENV_FILE=$1
   local SILENCE=${2:-0}

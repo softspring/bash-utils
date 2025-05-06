@@ -2,10 +2,16 @@
 
 function config_prompt_gcloud_project {
     title "Configure gcloud"
+
     promptGcloudAccount "$GCLOUD_ACCOUNT"
-    saveEnvVariable "$USER_PROJECT_CONFIG_FILE" "GCLOUD_ACCOUNT" "$GCLOUD_ACCOUNT"
+    if [[ $(envFileContains "$GLOBAL_CONFIG_FILE" "GCLOUD_ACCOUNT") == "0" ]]; then
+        saveEnvVariable "$USER_PROJECT_CONFIG_FILE" "GCLOUD_ACCOUNT" "$GCLOUD_ACCOUNT"
+    fi
+
     promptGcloudProject "$GCLOUD_PROJECT"
-    saveEnvVariable "$USER_PROJECT_CONFIG_FILE" "GCLOUD_PROJECT" "$GCLOUD_PROJECT"
+    if [[ $(envFileContains "$GLOBAL_CONFIG_FILE" "GCLOUD_PROJECT") == "0" ]]; then
+        saveEnvVariable "$USER_PROJECT_CONFIG_FILE" "GCLOUD_PROJECT" "$GCLOUD_PROJECT"
+    fi
 }
 
 CONFIG_PROJECT_ID=default
