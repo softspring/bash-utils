@@ -65,7 +65,7 @@ function promptGcloudProject {
       fi
     done
   else
-    success "OK\n"
+    success "$GCLOUD_PROJECT\n"
   fi
 }
 
@@ -117,6 +117,6 @@ function promptGcloudAccount {
       fi
     done
   else
-    success "OK\n"
+    success "$GCLOUD_ACCOUNT\n"
   fi
 }
