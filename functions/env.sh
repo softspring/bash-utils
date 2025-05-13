@@ -6,9 +6,9 @@ function envFileContains {
 
   if grep -E -q "^$PROPERTY=" "$ENV_FILE"
   then
-    return 0
+    echo 1
   else
-    return 1
+    echo 0
   fi
 }
 
