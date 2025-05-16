@@ -169,9 +169,6 @@ function run_command {
         fi
     done
 
-    _debug_commands
-    exit
-
     # if command not found, show error message
     if [ -z "$COMMAND_INDEX" ]; then
         message "\nCommand not found\n\n" "error"
