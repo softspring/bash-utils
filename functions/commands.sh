@@ -74,8 +74,8 @@ function _load_commands_in_dir {
     if [ -z "$CURRENT_GROUP_INDEX" ]; then
         _GROUPS_KEYS+=("$COMMAND_DIR_ID")
         if [ -f "$_COMMANDS_DIR/_.sh" ]; then
-            _GROUPS_NAMES+=("$(grep '^#> @group-name:' "$_COMMANDS_DIR/_.sh" | sed 's/#> @group-name:\s*//' | tr -d '\n')")
-            _GROUPS_DESCRIPTIONS+=("$(grep '^#> @group-description:' "$_COMMANDS_DIR/_.sh" | sed 's/#> @group-description:\s*//' | tr -d '\n')")
+            _GROUPS_NAMES+=("$(grep '^#> @group-name:' "$_COMMANDS_DIR/_.sh" | sed 's/#> @group-name:[[:space:]]*//' | tr -d '\n')")
+            _GROUPS_DESCRIPTIONS+=("$(grep '^#> @group-description:' "$_COMMANDS_DIR/_.sh" | sed 's/#> @group-description:[[:space:]]*//' | tr -d '\n')")
         else
             _GROUPS_NAMES+=("")
             _GROUPS_DESCRIPTIONS+=("")
@@ -83,8 +83,8 @@ function _load_commands_in_dir {
         CURRENT_GROUP_INDEX=$((${#_GROUPS_KEYS[@]} - 1))
     else
         if [ -f "$_COMMANDS_DIR/_.sh" ]; then
-            _GROUPS_NAMES[$CURRENT_GROUP_INDEX]="$(grep '^#> @group-name:' "$_COMMANDS_DIR/_.sh" | sed 's/#> @group-name:\s*//' | tr -d '\n')"
-            _GROUPS_DESCRIPTIONS[$CURRENT_GROUP_INDEX]="$(grep '^#> @group-description:' "$_COMMANDS_DIR/_.sh" | sed 's/#> @group-description:\s*//' | tr -d '\n')"
+            _GROUPS_NAMES[$CURRENT_GROUP_INDEX]="$(grep '^#> @group-name:' "$_COMMANDS_DIR/_.sh" | sed 's/#> @group-name:[[:space:]]*//' | tr -d '\n')"
+            _GROUPS_DESCRIPTIONS[$CURRENT_GROUP_INDEX]="$(grep '^#> @group-description:' "$_COMMANDS_DIR/_.sh" | sed 's/#> @group-description:[[:space:]]*//' | tr -d '\n')"
         fi
     fi
     # << Store group information
@@ -102,10 +102,10 @@ function _load_commands_in_dir {
         # skip tools scripts (starting with _)
         [ "${SCRIPT_ID:0:1}" == "_" ] && continue
 
-        COMMAND_NAME=$(grep '^#> @command-name:' "$SCRIPT" | sed 's/#> @command-name:\s*//' | tr -d '\n')
-        COMMAND_DESCRIPTION=$(grep '^#> @help-description:' "$SCRIPT" | sed 's/#> @help-description:\s*//' | tr -d '\n')
-        COMMAND_USAGE=$(grep '^#> @help-usage:' "$SCRIPT" | sed 's/#> @help-usage:\s*//' | tr -d '\n')
-        COMMAND_TEXT=$(grep '^#> #' "$SCRIPT" | sed 's/^#> #\s*//')
+        COMMAND_NAME=$(grep '^#> @command-name:' "$SCRIPT" | sed 's/#> @command-name:[[:space:]]*//' | tr -d '\n')
+        COMMAND_DESCRIPTION=$(grep '^#> @help-description:' "$SCRIPT" | sed 's/#> @help-description:[[:space:]]*//' | tr -d '\n')
+        COMMAND_USAGE=$(grep '^#> @help-usage:' "$SCRIPT" | sed 's/#> @help-usage:[[:space:]]*//' | tr -d '\n')
+        COMMAND_TEXT=$(grep '^#> #' "$SCRIPT" | sed 's/^#> #[[:space:]]*//')
 
         # Check if the command key already exists and overwrite if necessary
         for i in "${!_COMMANDS_KEYS[@]}"; do
@@ -168,6 +168,9 @@ function run_command {
             break
         fi
     done
+
+    _debug_commands
+    exit
 
     # if command not found, show error message
     if [ -z "$COMMAND_INDEX" ]; then
