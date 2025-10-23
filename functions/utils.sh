@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 
 function generateHash {
   local LENGTH=${1:-15}

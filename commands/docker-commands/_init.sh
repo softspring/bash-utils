@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env -S bash
 
 # shellcheck disable=SC2034
 # current script timestamp

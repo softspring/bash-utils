@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: clean
 #> @help-description: Clears project caches
 #> @help-usage:$MAIN_SCRIPT_NAME clear

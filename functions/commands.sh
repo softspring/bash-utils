@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env -S bash
 
 function add_repository {
     local DIR="$1"
@@ -101,6 +101,9 @@ function _load_commands_in_dir {
 
         # skip tools scripts (starting with _)
         [ "${SCRIPT_ID:0:1}" == "_" ] && continue
+
+        # skip not *.sh files
+        [[ "$SCRIPT" != *.sh ]] && continue
 
         COMMAND_NAME=$(grep '^#> @command-name:' "$SCRIPT" | sed 's/#> @command-name:[[:space:]]*//' | tr -d '\n')
         COMMAND_DESCRIPTION=$(grep '^#> @help-description:' "$SCRIPT" | sed 's/#> @help-description:[[:space:]]*//' | tr -d '\n')

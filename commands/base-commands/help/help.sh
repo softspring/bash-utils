@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env -S bash
 #> @command-name: help
 #> @help-description: Shows help for commands
 #> @help-usage: $MAIN_SCRIPT_NAME help [command]

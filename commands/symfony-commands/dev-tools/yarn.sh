@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: yarn
 #> @help-description: Runs yarn command
 #> @help-usage:$MAIN_SCRIPT_NAME yarn [yarn arguments]

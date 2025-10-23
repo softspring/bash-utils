@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env -S bash
 
 function start_docker_build {
     title "Building Docker images..."

@@ -1,8 +1,8 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 
 function confirm {
   local QUESTION="$1"
-  read -p "$QUESTION (y/n) " -n 1 -r
+  read -p "$QUESTION (y/N) " -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]
   then
       echo ""
