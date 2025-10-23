@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 
 function generateHash {
   local LENGTH=${1:-15}
@@ -15,7 +15,7 @@ function addDomainToEtcHosts {
   DOMAIN_REGEX=$(echo "$DOMAIN" | sed 's/\./\\./' | sed 's/\-/\\-/')
 
   message "Checking $DOMAIN domain configuration in /etc/hosts: "
-  if ! grep -E -q "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+.*\s$DOMAIN_REGEX" /etc/hosts
+  if ! grep -E -q "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+.*[[:space:]]$DOMAIN_REGEX" /etc/hosts
   then
     warning "MISSING\n"
     message "Add default $DOMAIN domain to /etc/hosts\n"

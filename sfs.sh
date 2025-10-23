@@ -1,6 +1,7 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 
 BASH_UTILS_PATH="$( dirname -- "${BASH_SOURCE[0]}"; )";
+MAIN_SCRIPT_NAME="$(basename "$0")" # maybe project
 
 source "$BASH_UTILS_PATH/functions/commands.sh"
 source "$BASH_UTILS_PATH/functions/docker.sh"
@@ -14,8 +15,5 @@ source "$BASH_UTILS_PATH/functions/yaml.sh"
 
 message "Bash-utils ${ANSI_GREEN}$BASH_UTILS_VERSION${ANSI_END} in a $(osType) system\n"
 
-# min version of bash
-dieIfNotMinimumVersion 'bash' '4.0' "$BASH_VERSION"
-
 # load base-commands
-load_commands "$BASH_UTILS_PATH/base-commands"
+add_repository "$BASH_UTILS_PATH/commands/base-commands"
