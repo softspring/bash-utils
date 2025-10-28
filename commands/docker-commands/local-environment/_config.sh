@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 
 function config_prompt_gcloud_project {
     title "Configure gcloud"

@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: migrations
 #> @help-description: Runs symfony migrations commands
 #> @help-usage:$MAIN_SCRIPT_NAME migrations [migrations command and arguments]

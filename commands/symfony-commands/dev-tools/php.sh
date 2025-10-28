@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: php
 #> @help-description: Runs php command inside the php container.
 #> @help-usage:$MAIN_SCRIPT_NAME php [php command and arguments]

@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: composer
 #> @help-description: Runs composer commands inside the php container
 #> @help-usage:$MAIN_SCRIPT_NAME composer [composer arguments]

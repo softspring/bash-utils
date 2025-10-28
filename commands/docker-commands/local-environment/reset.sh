@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: reset
 #> @help-description: Resets local project
 #> @help-usage: $MAIN_SCRIPT_NAME reset

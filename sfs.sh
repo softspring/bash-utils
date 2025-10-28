@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 
 BASH_UTILS_PATH="$( dirname -- "${BASH_SOURCE[0]}"; )";
 MAIN_SCRIPT_NAME="$(basename "$0")" # maybe project

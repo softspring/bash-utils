@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 
 # ######################################################################
 # ACCOUNTS
@@ -376,7 +376,7 @@ function gcloudServiceAccountExists {
     local SERVICE_ACCOUNT_ID=$2
     dieIfEmpty "$SERVICE_ACCOUNT_ID" "Missing required SERVICE_ACCOUNT_ID parameter in gcloudServiceAccountExists function\n" 1
 
-    if [ "$(gcloud iam service-accounts list --format "value(name)" --filter "name:$SERVICE_ACCOUNT_ID" --project="$PROJECT" | wc -l)" -eq 1 ]; then
+    if [ "$(gcloud iam service-accounts list --format "value(name)" --filter "email:$SERVICE_ACCOUNT_ID@$PROJECT.iam.gserviceaccount.com" --project="$PROJECT" | wc -l)" -eq 1 ]; then
         echo 1
     else
         echo 0
@@ -412,8 +412,15 @@ function gcloudProjectGrantRoleServiceAccount {
     local ROLE=$3
     dieIfEmpty "$ROLE" "Missing required ROLE parameter in gcloudProjectGrantRoleServiceAccount function\n" 1
 
-    message "Grant $ROLE to $SERVICE_ACCOUNT on $PROJECT\n"
-    gcloud projects add-iam-policy-binding "$PROJECT" --member="serviceAccount:$SERVICE_ACCOUNT" --role="$ROLE"
+    message "Grant ${ANSI_CYAN}$ROLE${ANSI_END} to ${ANSI_CYAN}$SERVICE_ACCOUNT${ANSI_END} on ${ANSI_CYAN}$PROJECT${ANSI_END} project"
+    gcloud projects add-iam-policy-binding "$PROJECT" --member="serviceAccount:$SERVICE_ACCOUNT" --role="$ROLE" >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        error " FAILED\n"
+        return 1
+    else
+        success " OK\n"
+        return 0
+    fi
 }
 
 # gcloudServiceAccountGrantRoleServiceAccount $PROJECT $RESOURCE_SERVICE_ACCOUNT $SERVICE_ACCOUNT $ROLE
@@ -427,11 +434,18 @@ function gcloudServiceAccountGrantRoleServiceAccount {
     local ROLE=$4
     dieIfEmpty "$ROLE" "Missing required ROLE parameter in gcloudServiceAccountGrantRoleServiceAccount function\n" 1
 
-    message "Grant $ROLE to $SERVICE_ACCOUNT on $RESOURCE_SERVICE_ACCOUNT\n"
+    message "Grant ${ANSI_CYAN}$ROLE${ANSI_END} to ${ANSI_CYAN}$SERVICE_ACCOUNT${ANSI_END} on ${ANSI_CYAN}$RESOURCE_SERVICE_ACCOUNT${ANSI_END} "
     gcloud iam service-accounts add-iam-policy-binding "$RESOURCE_SERVICE_ACCOUNT" \
         --member="serviceAccount:$SERVICE_ACCOUNT" \
         --role="$ROLE" \
-        --project="$PROJECT"
+        --project="$PROJECT" >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        error " FAILED\n"
+        return 1
+    else
+        success " OK\n"
+        return 0
+    fi
 }
 
 # gcloudServiceAccountActivateAuth $PROJECT $KEY_FILE
@@ -946,8 +960,16 @@ function gcloudBucketPermission {
     local PERMISSION=$4
     dieIfEmpty "$PERMISSION" "Missing required PERMISSION parameter in gcloudBucketPermission function\n" 1
 
-    gcloud storage buckets add-iam-policy-binding "gs://$BUCKET_NAME" --member="$TO" --role="$PERMISSION"
-    # gsutil iam ch "$TO:$PERMISSION" "gs://$BUCKET_NAME"  # <<--- old command
+    message "Grant ${ANSI_CYAN}$PERMISSION${ANSI_END} to ${ANSI_CYAN}$TO${ANSI_END} on ${ANSI_CYAN}$BUCKET_NAME${ANSI_END} bucket"
+    gcloud storage buckets add-iam-policy-binding "gs://$BUCKET_NAME" --member="$TO" --role="$PERMISSION" >/dev/null 2>&1
+
+    if [ $? -ne 0 ]; then
+        error " FAILED\n"
+        return 1
+    else
+        success " OK\n"
+        return 0
+    fi
 }
 
 # ######################################################################
@@ -960,7 +982,7 @@ function gcloudApiEnable {
     local API=$2
     dieIfEmpty "$API" "Missing required API parameter in gcloudApiEnable function\n" 1
 
-    message "Enable $API API in $PROJECT\n"
+    message "Enable ${ANSI_SUCCESS}$API${ANSI_END} API in $PROJECT\n"
     gcloud services enable "$API.googleapis.com" --project="$PROJECT"
 }
 

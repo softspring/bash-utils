@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: stop
 #> @help-description: Stops the project
 #> @help-usage: $MAIN_SCRIPT_NAME stop

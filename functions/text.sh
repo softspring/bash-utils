@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 
 # http://www.andrewnoske.com/wiki/Bash_-_adding_color
 

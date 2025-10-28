@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: console
 #> @help-description: Runs symfony console commands inside the php container
 #> @help-usage:$MAIN_SCRIPT_NAME console [console command and arguments]

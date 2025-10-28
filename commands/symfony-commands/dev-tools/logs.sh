@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: logs
 #> @help-description: Shows docker logs
 #> @help-usage:$MAIN_SCRIPT_NAME logs

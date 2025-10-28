@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #> @command-name: config
 #> @help-description: Setups project, creating needed resources and configurations
 #> @help-usage: $MAIN_SCRIPT_NAME config
