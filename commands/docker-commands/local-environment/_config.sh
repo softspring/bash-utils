@@ -51,13 +51,17 @@ function config_gcloud_buckets {
 }
 
 CONFIG_DEFAULT_DOMAIN=
+CONFIG_API_DEFAULT_DOMAIN=
 
 function config_local_domains {
-    title "Configure local domain"
+    title "Configure local domains"
     test "$LOCAL_DEFAULT_DOMAIN" || saveEnvVariable "$USER_PROJECT_CONFIG_FILE" "LOCAL_DEFAULT_DOMAIN" "$CONFIG_DEFAULT_DOMAIN"
     message "Check LOCAL_DEFAULT_DOMAIN env variable: $LOCAL_DEFAULT_DOMAIN\n"
     addDomainToEtcHosts "$LOCAL_DEFAULT_DOMAIN"
     addDomainToEtcHosts "www.$LOCAL_DEFAULT_DOMAIN"
+    test "$LOCAL_API_DEFAULT_DOMAIN" || saveEnvVariable "$USER_PROJECT_CONFIG_FILE" "LOCAL_API_DEFAULT_DOMAIN" "$CONFIG_API_DEFAULT_DOMAIN"
+    message "Check LOCAL_API_DEFAULT_DOMAIN env variable: $LOCAL_API_DEFAULT_DOMAIN\n"
+    addDomainToEtcHosts "$LOCAL_API_DEFAULT_DOMAIN"
 }
 
 function config_project {
