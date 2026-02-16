@@ -8,6 +8,8 @@ function config_prompt_gcloud_project {
         saveEnvVariable "$USER_PROJECT_CONFIG_FILE" "GCLOUD_ACCOUNT" "$GCLOUD_ACCOUNT"
     fi
 
+    gcloudSelectAccount "$GCLOUD_ACCOUNT"
+
     promptGcloudProject "$GCLOUD_PROJECT"
     if [[ $(envFileContains "$GLOBAL_CONFIG_FILE" "GCLOUD_PROJECT") == "0" ]]; then
         saveEnvVariable "$USER_PROJECT_CONFIG_FILE" "GCLOUD_PROJECT" "$GCLOUD_PROJECT"
