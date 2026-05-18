@@ -6,7 +6,7 @@
 #> #
 
 # ensure docker container is running
-dieIfDockerContainerNotRunning php
+dieIfDockerContainerNotRunning $SYMFONY_CONSOLE_CONTAINER_NAME
 
 # NOTE: do not use dockerComposeExec, because it can break quoting of arguments
-docker compose exec php bin/console "$@"
+docker compose exec $SYMFONY_CONSOLE_CONTAINER_NAME bin/console "$@"

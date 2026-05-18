@@ -11,10 +11,6 @@
 #> #   $ $MAIN_SCRIPT_NAME php composer install
 #> #   $ $MAIN_SCRIPT_NAME php bin/console cache:clear
 
-# you can change the container name if you want to run the command in a different container
-# can be overriden by setting PHP_CONTAINER_NAME in .env file but default value is php
-PHP_CONTAINER_NAME=${PHP_CONTAINER_NAME:-php}
-
 # shellcheck disable=SC2124
 ARGUMENTS="${@:1}"
 

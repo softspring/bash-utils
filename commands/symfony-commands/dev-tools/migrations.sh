@@ -18,7 +18,7 @@ COMMAND="${@:1}"
 # shellcheck disable=SC2124
 ARGUMENTS="${@:2}"
 
-dieIfDockerContainerNotRunning php
+dieIfDockerContainerNotRunning $SYMFONY_CONSOLE_CONTAINER_NAME
 
 # shellcheck disable=SC2086
-docker compose exec php bin/console doctrine:migrations:$COMMAND $ARGUMENTS
+docker compose exec $SYMFONY_CONSOLE_CONTAINER_NAME bin/console doctrine:migrations:$COMMAND $ARGUMENTS

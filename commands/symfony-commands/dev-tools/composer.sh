@@ -15,7 +15,7 @@
 # shellcheck disable=SC2124
 ARGUMENTS="${@:1}"
 
-dieIfDockerContainerNotRunning php
+dieIfDockerContainerNotRunning $SYMFONY_CONSOLE_CONTAINER_NAME
 
 # shellcheck disable=SC2086
-docker compose exec php composer $ARGUMENTS
+docker compose exec $SYMFONY_CONSOLE_CONTAINER_NAME composer $ARGUMENTS
