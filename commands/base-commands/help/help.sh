@@ -9,7 +9,7 @@ for i in "${!_COMMANDS_KEYS[@]}"; do
         HELP_COMMAND_INDEX=$i
         shift 2
         break
-    elif [[ "${_COMMANDS_NAMES[$i]}" == "$1" ]]; then
+    elif [[ -z "${_COMMANDS_NAMES_PREFIX[$i]}" && "${_COMMANDS_NAMES[$i]}" == "$1" ]]; then
         HELP_COMMAND_INDEX=$i
         shift
         break

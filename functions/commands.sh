@@ -2,8 +2,9 @@
 
 function add_repository {
     local DIR="$1"
+    local COMMAND_PREFIX="$2"
     load_functions_directory "$DIR"
-    load_commands_directory "$DIR"
+    load_commands_directory "$DIR" "$COMMAND_PREFIX"
 }
 
 # load (and run) util scripts stating with _ from repositories
@@ -31,12 +32,13 @@ function load_functions_directory {
 # load commands from repositories
 function load_commands_directory {
     local _COMMANDS_BASE_PATH="$1"
+    local COMMAND_PREFIX="$2"
 
     for DIRECTORY in "$_COMMANDS_BASE_PATH"/*; do
         # if is not a directory, skip
         [ ! -d "$DIRECTORY" ] && continue
 
-        _load_commands_in_dir "$DIRECTORY"
+        _load_commands_in_dir "$DIRECTORY" "$COMMAND_PREFIX"
     done
 }
 
@@ -55,10 +57,12 @@ _COMMANDS_SCRIPT_PATHS=()
 # load commands, storing ubication and help information extracted from "#> @attribute: " comments
 function _load_commands_in_dir {
     local _COMMANDS_DIR="$1"
+    local COMMAND_PREFIX="$2"
 
     local COMMAND_DIR_ID
     local SCRIPT_ID
     local COMMAND_KEY
+    local COMMAND_NAME_PREFIX
     local SCRIPT
 
     COMMAND_DIR_ID=$(basename -- "$_COMMANDS_DIR")
@@ -94,7 +98,7 @@ function _load_commands_in_dir {
         # SCRIPT_BASE_NAME=$(basename -- "$SCRIPT")
         # SCRIPT=/home/user/example-commands/dev/hello.sh
         SCRIPT_ID=$(basename -- "$SCRIPT" ".sh") # hello
-        COMMAND_KEY="${COMMAND_DIR_ID}-$(basename -- "$SCRIPT" ".sh")"
+        COMMAND_KEY="${COMMAND_PREFIX:+$COMMAND_PREFIX-}${COMMAND_DIR_ID}-$(basename -- "$SCRIPT" ".sh")"
 
         # if is a directory, skip
         [ -d "$SCRIPT" ] && continue
@@ -109,6 +113,7 @@ function _load_commands_in_dir {
         COMMAND_DESCRIPTION=$(grep '^#> @help-description:' "$SCRIPT" | sed 's/#> @help-description:[[:space:]]*//' | tr -d '\n')
         COMMAND_USAGE=$(grep '^#> @help-usage:' "$SCRIPT" | sed 's/#> @help-usage:[[:space:]]*//' | tr -d '\n')
         COMMAND_TEXT=$(grep '^#> #' "$SCRIPT" | sed 's/^#> #[[:space:]]*//')
+        COMMAND_NAME_PREFIX="${COMMAND_PREFIX:-${_GROUPS_NAMES[$CURRENT_GROUP_INDEX]}}"
 
         # Check if the command key already exists and overwrite if necessary
         for i in "${!_COMMANDS_KEYS[@]}"; do
@@ -119,7 +124,7 @@ function _load_commands_in_dir {
                 _COMMANDS_TEXTS[$i]="$COMMAND_TEXT"
                 _COMMANDS_SCRIPT_PATHS[$i]="$SCRIPT"
                 _COMMANDS_GROUPS[$i]="$COMMAND_DIR_ID"
-                _COMMANDS_NAMES_PREFIX[$i]="${_GROUPS_NAMES[$CURRENT_GROUP_INDEX]}"
+                _COMMANDS_NAMES_PREFIX[$i]="$COMMAND_NAME_PREFIX"
                 continue 2
             fi
         done
@@ -132,7 +137,7 @@ function _load_commands_in_dir {
         _COMMANDS_TEXTS+=("$COMMAND_TEXT")
         _COMMANDS_SCRIPT_PATHS+=("$SCRIPT")
         _COMMANDS_GROUPS+=("$COMMAND_DIR_ID")
-        _COMMANDS_NAMES_PREFIX+=("${_GROUPS_NAMES[$CURRENT_GROUP_INDEX]}")
+        _COMMANDS_NAMES_PREFIX+=("$COMMAND_NAME_PREFIX")
     done
 }
 
@@ -165,7 +170,7 @@ function run_command {
             COMMAND_INDEX=$i
             shift 2
             break
-        elif [[ "${_COMMANDS_NAMES[$i]}" == "$1" ]]; then
+        elif [[ -z "${_COMMANDS_NAMES_PREFIX[$i]}" && "${_COMMANDS_NAMES[$i]}" == "$1" ]]; then
             COMMAND_INDEX=$i
             shift
             break
