@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bash
+#!/usr/bin/env -S bash -e
 
 HELP_SPACES_PAD=40
 

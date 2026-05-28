@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bash
+#!/usr/bin/env -S bash -e
 
 RESET_DB_CONTAINER_NAME=${RESET_DB_CONTAINER_NAME:-"db"}
 RESET_DATABASE_VOLUME_NAME=${RESET_DATABASE_VOLUME_NAME:-"db-data"}

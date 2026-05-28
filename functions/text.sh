@@ -166,6 +166,10 @@ function success {
   message "$1" "success"
 }
 
+function debug {
+  message "$1" "cyan"
+}
+
 function warning {
   message "$1" "warning"
 }

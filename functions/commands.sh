@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bash
+#!/usr/bin/env -S bash -e
 
 function add_repository {
     local DIR="$1"
@@ -22,7 +22,7 @@ function load_functions_directory {
         [ "${SCRIPT_ID:0:1}" != "_" ] && continue
         [ "$SCRIPT_ID" == "_" ] && continue
 
-        message "Loading ${SCRIPT/$BASE_DIR\//}\n" "cyan"
+        debug "Loading ${SCRIPT/$BASE_DIR\//}\n"
 
         # shellcheck disable=SC1090
         source "$SCRIPT"
