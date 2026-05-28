@@ -167,6 +167,23 @@ function success {
 }
 
 function debug {
+  local PROJECT_COMMAND_DEBUG_VALUE="${PROJECT_COMMAND_DEBUG:-}"
+  local PROJECT_COMMAND_DEBUG_FILE
+
+  if [[ -z "${PROJECT_COMMAND_DEBUG+x}" ]]; then
+    PROJECT_COMMAND_DEBUG_FILE="${GLOBAL_CONFIG_PATH:-$HOME/.project}/config.env"
+    if [ -f "$PROJECT_COMMAND_DEBUG_FILE" ]; then
+      PROJECT_COMMAND_DEBUG_VALUE="$(grep -E '^PROJECT_COMMAND_DEBUG=' "$PROJECT_COMMAND_DEBUG_FILE" | tail -n 1 | sed 's/^PROJECT_COMMAND_DEBUG=//')"
+    fi
+
+    PROJECT_COMMAND_DEBUG_FILE="$BASE_DIR/.env"
+    if [ -f "$PROJECT_COMMAND_DEBUG_FILE" ] && grep -E -q '^PROJECT_COMMAND_DEBUG=' "$PROJECT_COMMAND_DEBUG_FILE"; then
+      PROJECT_COMMAND_DEBUG_VALUE="$(grep -E '^PROJECT_COMMAND_DEBUG=' "$PROJECT_COMMAND_DEBUG_FILE" | tail -n 1 | sed 's/^PROJECT_COMMAND_DEBUG=//')"
+    fi
+  fi
+
+  [ "$PROJECT_COMMAND_DEBUG_VALUE" == "1" ] || return 0
+
   message "$1" "cyan"
 }
 
