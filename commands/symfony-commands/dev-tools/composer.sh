@@ -17,5 +17,7 @@ ARGUMENTS="${@:1}"
 
 dieIfDockerContainerNotRunning $SYMFONY_CONSOLE_CONTAINER_NAME
 
+title "Running composer $ARGUMENTS command into $SYMFONY_CONSOLE_CONTAINER_NAME container\n"
+
 # shellcheck disable=SC2086
 docker compose exec $SYMFONY_CONSOLE_CONTAINER_NAME composer $ARGUMENTS

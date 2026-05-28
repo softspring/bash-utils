@@ -8,5 +8,7 @@
 # ensure docker container is running
 dieIfDockerContainerNotRunning $SYMFONY_CONSOLE_CONTAINER_NAME
 
+title "Running Symfony console $@ command into $SYMFONY_CONSOLE_CONTAINER_NAME container\n"
+
 # NOTE: do not use dockerComposeExec, because it can break quoting of arguments
 docker compose exec $SYMFONY_CONSOLE_CONTAINER_NAME bin/console "$@"

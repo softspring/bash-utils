@@ -20,5 +20,7 @@ ARGUMENTS="${@:2}"
 
 dieIfDockerContainerNotRunning $SYMFONY_CONSOLE_CONTAINER_NAME
 
+title "Running Symfony console doctrine:migrations:$COMMAND command into $SYMFONY_CONSOLE_CONTAINER_NAME container\n"
+
 # shellcheck disable=SC2086
 docker compose exec $SYMFONY_CONSOLE_CONTAINER_NAME bin/console doctrine:migrations:$COMMAND $ARGUMENTS
